@@ -19,20 +19,28 @@ def login_handler(data):
     password = data['password']
 
     print('Received login request:', data)
+
+    # Input validation
+    # If input is missing, return an error
+    if username is None:
+        return jsonify({'message': 'Username is missing'}), 400
+    
+    if password is None:
+        return jsonify({'message': 'Password is missing'}), 400
     
     # Check if the user exists in the database
-    cursor = db_connection.cursor()
+    cursor = db_connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
     user = cursor.fetchone()
     cursor.close()
 
     # If user does not exist, return an error
     if user is None:
-        return jsonify({'message': 'User does not exist'}), 400
+        return jsonify({'message': 'User does not exist'}), 401
     
     # Check if the password is correct
-    if user[2] != password:
-        return jsonify({'message': 'Incorrect password'}), 400
+    if user['password'] != password:
+        return jsonify({'message': 'Incorrect password'}), 401
     
     # If the login is successful, return the user's information
-    return jsonify({'username': user[0], 'email': user[1]}), 200
+    return jsonify({'username': user['username'], 'email': user['email'], 'role': user['role']}), 200
