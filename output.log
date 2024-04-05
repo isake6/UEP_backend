@@ -1,0 +1,28 @@
+ * Serving Flask app 'app'
+ * Debug mode: off
+[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8000
+ * Running on http://159.203.80.189:8000
+[33mPress CTRL+C to quit[0m
+127.0.0.1 - - [05/Apr/2024 16:57:52] "OPTIONS /login HTTP/1.1" 200 -
+127.0.0.1 - - [05/Apr/2024 16:57:52] "POST /login HTTP/1.1" 200 -
+127.0.0.1 - - [05/Apr/2024 16:58:19] "OPTIONS /login HTTP/1.1" 200 -
+127.0.0.1 - - [05/Apr/2024 16:58:19] "POST /login HTTP/1.1" 200 -
+127.0.0.1 - - [05/Apr/2024 16:59:56] "[33mGET /.well-known/acme-challenge/OLYG9KYD22PVHEM-_UFS1OUNB4ADQ6JF HTTP/1.1[0m" 404 -
+127.0.0.1 - - [05/Apr/2024 16:59:57] "[33mGET /.well-known/acme-challenge/RLVY92V20Z49SIEO4NE7JQYOIZSNMD2N HTTP/1.1[0m" 404 -
+127.0.0.1 - - [05/Apr/2024 17:06:05] "[33mGET /.env HTTP/1.1[0m" 404 -
+127.0.0.1 - - [05/Apr/2024 17:09:55] "[33mGET /wp-admin/setup-config.php?step=1 HTTP/1.1[0m" 404 -
+127.0.0.1 - - [05/Apr/2024 17:09:55] "[33mGET /wordpress/wp-admin/setup-config.php?step=1 HTTP/1.1[0m" 404 -
+127.0.0.1 - - [05/Apr/2024 17:09:55] "[33mGET /wp-content/plugins/royal-elementor-addons/assets/css/frontend.min.css HTTP/1.1[0m" 404 -
+127.0.0.1 - - [05/Apr/2024 17:10:29] "[33mGET / HTTP/1.1[0m" 404 -
+127.0.0.1 - - [05/Apr/2024 17:20:48] "[33mGET / HTTP/1.1[0m" 404 -
+127.0.0.1 - - [05/Apr/2024 17:22:50] "[33mGET / HTTP/1.1[0m" 404 -
+127.0.0.1 - - [05/Apr/2024 17:27:04] "[33mGET / HTTP/1.1[0m" 404 -
+127.0.0.1 - - [05/Apr/2024 17:27:13] "[33mGET / HTTP/1.1[0m" 404 -
+127.0.0.1 - - [05/Apr/2024 17:35:40] "[33mGET /.env HTTP/1.1[0m" 404 -
+127.0.0.1 - - [05/Apr/2024 17:35:40] "[33mPOST / HTTP/1.1[0m" 404 -
+127.0.0.1 - - [05/Apr/2024 17:40:06] "[33mGET /wp-content/plugins/backup-backup/modules/gdrivebanner/assets/css/styles.css HTTP/1.1[0m" 404 -
+127.0.0.1 - - [05/Apr/2024 17:41:23] "[33mGET / HTTP/1.1[0m" 404 -
+127.0.0.1 - - [05/Apr/2024 17:44:00] "[33mGET / HTTP/1.1[0m" 404 -
+127.0.0.1 - - [05/Apr/2024 17:44:01] "[33mGET / HTTP/1.1[0m" 404 -
