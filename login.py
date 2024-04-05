@@ -2,6 +2,7 @@ import boto3
 import psycopg2
 from json import dumps, loads
 import os
+from flask import Response, jsonify
 
 # Database connection
 db_connection = psycopg2.connect(
@@ -12,13 +13,12 @@ db_connection = psycopg2.connect(
     database=os.getenv('DB_NAME')
 )
 
-def lambda_handler(event, context):
-    event = event.get('body')
-    event = loads(event)
-
+def login_handler(data):
     # Get the username and password from the request
-    username = event['username']
-    password = event['password']
+    username = data['username']
+    password = data['password']
+
+    print('Received login request:', data)
     
     # Check if the user exists in the database
     cursor = db_connection.cursor()
@@ -28,20 +28,11 @@ def lambda_handler(event, context):
 
     # If user does not exist, return an error
     if user is None:
-        return {
-            'statusCode': 400,
-            'body': dumps({'message': 'User does not exist'})
-        }
+        return jsonify({'message': 'User does not exist'}), 400
     
     # Check if the password is correct
     if user[2] != password:
-        return {
-            'statusCode': 400,
-            'body': dumps({'message': 'Incorrect password'})
-        }
+        return jsonify({'message': 'Incorrect password'}), 400
     
     # If the login is successful, return the user's information
-    return {
-        'statusCode': 200,
-        'body': dumps({'username': user[0], 'email': user[1]})
-    }
+    return jsonify({'username': user[0], 'email': user[1]}), 200
