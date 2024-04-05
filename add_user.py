@@ -17,8 +17,8 @@ def signup_handler(data):
     # Get the input from the request
     email = data['email']
     password = data['password']
-    first_name = data['first_name']
-    last_name = data['last_name']
+    first_name = data['firstName']
+    last_name = data['lastName']
     role = data['role']
 
     print('Received signup request:', data)
