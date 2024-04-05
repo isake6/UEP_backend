@@ -1,5 +1,5 @@
 import boto3
-import psycopg2
+import psycopg2.extras
 from json import dumps, loads
 import os
 from flask import Response, jsonify
