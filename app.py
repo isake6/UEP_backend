@@ -1,6 +1,6 @@
 from flask import Flask, request, make_response
 from flask_cors import CORS
-import login
+import login, add_user
 import json
 
 app = Flask(__name__)
@@ -10,6 +10,12 @@ CORS(app, resources={r"/*": {"origins": ["https://lobster-app-g8oyg.ondigitaloce
 def login_route():
 	data = request.get_json()
 	result = login.login_handler(data)
+	return result
+
+@app.route('/create', methods=['POST'])
+def create_route():
+	data = request.get_json()
+	result = add_user.signup_handler(data)
 	return result
 
 @app.errorhandler(500)
