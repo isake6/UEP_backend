@@ -20,7 +20,6 @@ def add_event_handler(data):
     rso = data['rso']
     name = data['name']
     category = data['category']
-    date = data['date']
     time = data['time']
     description = data['description']
     location = data['location']
@@ -45,9 +44,6 @@ def add_event_handler(data):
 
     if name is None:
         return jsonify({'message': 'Event name is missing'}), 400
-    
-    if date is None:
-        return jsonify({'message': 'Event date is missing'}), 400
     
     if time is None:
         return jsonify({'message': 'Event time is missing'}), 400
@@ -89,7 +85,7 @@ def add_event_handler(data):
     if category == 'public':
         try:
             cursor = db_connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
-            cursor.execute("INSERT INTO pending_events (university, author_id, approved, category, name, date, time, description, location, phone, email) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", (university, author_id, False, category, name, date, time, description, location, phone, email))
+            cursor.execute("INSERT INTO pending_events (university, author_id, approved, category, name, time, description, location, phone, email) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", (university, author_id, False, category, name, time, description, location, phone, email))
             db_connection.commit()
             cursor.close()
 
@@ -123,7 +119,7 @@ def add_event_handler(data):
     try:
         cursor = db_connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
         cursor.execute("INSERT INTO events (university, author_id, approved, category, name, date, time, description, location, phone, email, rso) VALUES \
-            (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", (university, author_id, True, category, name, date, time, description, location, phone, email, rso))
+            (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", (university, author_id, True, category, name, time, description, location, phone, email, rso))
         db_connection.commit()
         cursor.close()
 

@@ -1,6 +1,6 @@
 from flask import Flask, request, make_response
 from flask_cors import CORS
-import login, add_user, add_event
+import login, add_user, add_event, add_comment
 import json
 
 app = Flask(__name__)
@@ -22,6 +22,12 @@ def create_route():
 def add_event_route():
 	data = request.get_json()
 	result = add_event.add_event_handler(data)
+	return result
+
+@app.route('/add_comment', methods=['POST'])
+def add_comment_route():
+	data = request.get_json()
+	result = add_comment.add_comment_handler(data)
 	return result
 
 @app.errorhandler(500)
