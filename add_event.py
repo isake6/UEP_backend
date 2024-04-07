@@ -64,6 +64,15 @@ def add_event_handler(data):
     if email is None:
         return jsonify({'message': 'Event email is missing'}), 400
     
+    # Validate author id
+    cursor = db_connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    cursor.execute("SELECT * FROM users WHERE id = %s", (author_id,))
+    author = cursor.fetchone()
+    cursor.close()
+
+    if author is None:
+        return jsonify({'message': 'Invalid author ID. User does not exist.'}), 401
+    
     # Get the university of the author
     cursor = db_connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cursor.execute("SELECT * FROM universities WHERE email_domain = %s", (author_email.split('@')[1],))
