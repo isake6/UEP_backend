@@ -51,6 +51,19 @@ def add_rating_handler(data):
 
     if event is None:
         return jsonify({'message': 'Event ID is not in the database'}), 401
+    
+    # Prevent users from rating the same event twice
+    try:
+        cursor = db_connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        cursor.execute('SELECT * FROM ratings WHERE author_id = %s AND event_id = %s', (user_id, event_id))
+        duplicate_ratings = cursor.fetchone()
+    except psycopg2.Error as e:
+        return jsonify({'message': 'Error while trying to select from ratings table.'}), 500
+    finally:
+        cursor.close()
+
+    if duplicate_ratings is not None:
+        return jsonify({'message': 'User has already rated this event'}), 401
 
     # Insert the rating into the database
     try:
