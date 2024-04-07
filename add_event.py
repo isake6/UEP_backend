@@ -139,6 +139,21 @@ def add_event_handler(data):
 
     if results is None:
         return jsonify({'message': 'Invalid user authorization. User is not the admin of this RSO.'}), 401
+    
+    # Check that there is no overlapping event
+    try:
+        cursor = db_connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        cursor.execute("SELECT * FROM events WHERE time = %s AND location = %s", (time, location))
+        results = cursor.fetchone()
+    except psycopg2.Error as e:
+        print(f"Error: {e}")
+        return jsonify({'message': 'Error while trying to select from events table.'}), 500
+    finally:
+        if cursor is not None:
+            cursor.close()
+
+    if results is not None:
+        return jsonify({'message': 'Error: Event Overlap. An event already exists at this time and location'}), 401
 
     # Add the event to the database
     try:
