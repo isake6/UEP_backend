@@ -5,13 +5,13 @@ import os
 from flask import Response, jsonify
 from database import get_db
 
-def add_comment_handler(data):
+def add_rating_handler(data):
     # Get the input from the request
     user_id = data['user_id']
     event_id = data['event_id']
-    comment = data['comment']
+    rating = data['rating']
 
-    print('Received add comment request:', data)
+    print('Received add rating request:', data)
 
     # Database connection
     db_connection = get_db()
@@ -23,10 +23,10 @@ def add_comment_handler(data):
     if event_id is None:
         return jsonify({'message': 'Event ID is missing'}), 400
     
-    if comment is None:
-        return jsonify({'message': 'Comment is missing'}), 400
+    if rating is None:
+        return jsonify({'message': 'Rating is missing'}), 400
 
-    # Validate author id
+    # Validate User id
     try:
         cursor = db_connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         cursor.execute('SELECT * FROM users WHERE id = %s', (user_id,))
@@ -52,14 +52,14 @@ def add_comment_handler(data):
     if event is None:
         return jsonify({'message': 'Event ID is not in the database'}), 401
 
-    # Insert the comment into the database
+    # Insert the rating into the database
     try:
         cursor = db_connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-        cursor.execute('INSERT INTO comments (user_id, event_id, comment, created_time) VALUES (%s, %s, %s, NOW())', (user_id, event_id, comment))
+        cursor.execute('INSERT INTO ratings (user_id, event_id, rating, created_time) VALUES (%s, %s, %s, NOW())', (user_id, event_id, rating))
         db_connection.commit()
     except Exception as e:
-        return jsonify({'message': 'Error while trying to insert into comments table.'}), 500
+        return jsonify({'message': 'Error while trying to insert into ratings table.'}), 500
     finally:
         cursor.close()
 
-    return jsonify({'message': 'Comment added successfully'}), 200
+    return jsonify({'message': 'Rating added successfully'}), 200
