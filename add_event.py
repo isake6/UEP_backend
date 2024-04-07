@@ -112,7 +112,7 @@ def add_event_handler(data):
 
     # Validate that the author is the admin of the RSO
     cursor = db_connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
-    cursor.execute("SELECT * FROM rso WHERE id = %s AND admin_id = %s", (rso, author_id))
+    cursor.execute("SELECT * FROM rso WHERE id = %s AND admin = %s", (rso, author_id))
     rso = cursor.fetchone()
     cursor.close()
 
