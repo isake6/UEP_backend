@@ -1,10 +1,10 @@
-from flask import Flask, request, make_response, jsonify, g
+from flask import Flask, request, make_response, g
 from flask_cors import CORS
-from psycopg2 import pool
-import psycopg2.extras
-import login, add_user, add_event, add_comment, add_rating
-import json
-import os
+import login
+import add_user
+import add_event
+import add_comment, update_comment
+import add_rating
 from database import db_pool
 
 app = Flask(__name__)
@@ -41,6 +41,12 @@ def add_event_route():
 def add_comment_route():
 	data = request.get_json()
 	result = add_comment.add_comment_handler(data)
+	return result
+
+@app.route('/update_comment', methods=['POST'])
+def update_comment_route():
+	data = request.get_json()
+	result = update_comment.update_comment_handler(data)
 	return result
 
 @app.route('/add_rating', methods=['POST'])
