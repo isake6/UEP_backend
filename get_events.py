@@ -31,10 +31,12 @@ def get_events_handler(data):
     # Get events from database
     try:
         cursor = db_connection.cursor()
-        cursor.execute('''SELECT * FROM events E, rso_members M \
-                       WHERE E.category = 'private' AND university_id = %s \
-                       OR E.category = 'public' \
-                       OR E.category = 'RSO' AND E.rso = M.rso_id AND M.id = %s''', (university_id, user_id))
+        cursor.execute('''(SELECT * FROM events E WHERE E.category = 'private' AND E.university = %s) \
+            UNION \
+            (SELECT * FROM events E WHERE E.category = 'public') \
+            UNION \
+            (SELECT E.* FROM events E, rso_members M WHERE E.category = 'RSO' AND E.rso = M.rso_id AND M.id = %s)''' \
+            , (university_id, user_id))
         events = cursor.fetchall()
     except psycopg2.Error as e:
         print(f"Error: {e}")
