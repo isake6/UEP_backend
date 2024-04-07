@@ -30,7 +30,7 @@ def get_events_handler(data):
     
     # Get events from database
     try:
-        cursor = db_connection.cursor()
+        cursor = db_connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         cursor.execute('''(SELECT * FROM events E WHERE E.category = 'private' AND E.university = %s) \
             UNION \
             (SELECT * FROM events E WHERE E.category = 'public') \
