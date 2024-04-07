@@ -2,7 +2,7 @@ from flask import Flask, request, make_response, jsonify, g
 from flask_cors import CORS
 from psycopg2 import pool
 import psycopg2.extras
-import login, add_user, add_event, add_comment
+import login, add_user, add_event, add_comment, add_rating
 import json
 import os
 from database import db_pool
@@ -41,6 +41,12 @@ def add_event_route():
 def add_comment_route():
 	data = request.get_json()
 	result = add_comment.add_comment_handler(data)
+	return result
+
+@app.route('/add_rating', methods=['POST'])
+def add_rating_route():
+	data = request.get_json()
+	result = add_rating.add_rating_handler(data)
 	return result
 
 @app.errorhandler(500)
