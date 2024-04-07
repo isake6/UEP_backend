@@ -1,10 +1,23 @@
-from flask import Flask, request, make_response
+from flask import Flask, request, make_response, jsonify, g
 from flask_cors import CORS
-import login, add_user, add_event
+from psycopg2 import pool
+import psycopg2.extras
+import login, add_user, add_event, add_comment
 import json
+import os
+from database import db_pool
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": ["https://lobster-app-g8oyg.ondigitalocean.app", "http://159.203.80.189", "http://localhost:3000", "https://somethingorother.xyz"]}}, supports_credentials=True)
+
+
+@app.teardown_appcontext
+def close_db(e=None):
+    db = g.pop('db', None)
+
+    if db is not None:
+        # Put the connection back in the pool
+        db_pool.putconn(db)
 
 @app.route('/login', methods=['POST'])
 def login_route():
@@ -22,6 +35,12 @@ def create_route():
 def add_event_route():
 	data = request.get_json()
 	result = add_event.add_event_handler(data)
+	return result
+
+@app.route('/add_comment', methods=['POST'])
+def add_comment_route():
+	data = request.get_json()
+	result = add_comment.add_comment_handler(data)
 	return result
 
 @app.errorhandler(500)
