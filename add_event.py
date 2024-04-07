@@ -113,12 +113,12 @@ def add_event_handler(data):
     # Validate that the author is the admin of the RSO
     cursor = db_connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
     cursor.execute("SELECT * FROM rso WHERE id = %s AND admin = %s", (rso, author_id))
-    rso = cursor.fetchone()
+    results = cursor.fetchone()
     cursor.close()
 
-    if rso is None:
+    if results is None:
         return jsonify({'message': 'Invalid user authorization. User is not the admin of this RSO.'}), 401
-    
+
     # Add the event to the database
     try:
         cursor = db_connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
