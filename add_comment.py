@@ -3,7 +3,7 @@ import psycopg2.extras
 from json import dumps, loads
 import os
 from flask import Response, jsonify
-from app import get_db
+from database import get_db
 
 def add_comment_handler(data):
     # Get the input from the request

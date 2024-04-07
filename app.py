@@ -5,30 +5,11 @@ import psycopg2.extras
 import login, add_user, add_event, add_comment
 import json
 import os
+from database import db_pool
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": ["https://lobster-app-g8oyg.ondigitalocean.app", "http://159.203.80.189", "http://localhost:3000", "https://somethingorother.xyz"]}}, supports_credentials=True)
 
-# Create a connection pool
-db_pool = psycopg2.pool.SimpleConnectionPool(
-    minconn=1,
-    maxconn=10,
-    host=os.getenv('DB_HOST'),
-    port=os.getenv('DB_PORT'),
-    user=os.getenv('DB_USER'),
-    password=os.getenv('DB_PASSWORD'),
-    database=os.getenv('DB_NAME')
-)
-
-def get_db():
-	if 'db' not in g or g.db.closed:
-		try:
-			# Get a connection from the pool
-			g.db = db_pool.getconn()
-		except psycopg2.pool.PoolError:
-			return jsonify({'message': 'Error getting connection from the pool'}), 500
-
-	return g.db
 
 @app.teardown_appcontext
 def close_db(e=None):
