@@ -92,7 +92,8 @@ def add_event_handler(data):
     # If the event isn't public, insert the event into the database
     try:
         cursor = db_connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        cursor.execute("INSERT INTO events (name, description, date, time, location) VALUES (%s, %s, %s, %s, %s, %s, %s)", (name, description, date, time, location))
+        cursor.execute("INSERT INTO events (university, author_id, approved, category, name, date, time, description, location, phone, email, rso) VALUES \
+            (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", (university, author_id, True, category, name, date, time, description, location, phone, email, rso))
         db_connection.commit()
         cursor.close()
 
