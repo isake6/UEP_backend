@@ -1,8 +1,5 @@
-import boto3
 import psycopg2.extras
-from json import dumps, loads
-import os
-from flask import Response, jsonify
+from flask import jsonify
 from database import get_db
 
 def add_event_handler(data):
@@ -22,36 +19,41 @@ def add_event_handler(data):
 
     # Database connection
     db_connection = get_db()
+    if isinstance(db_connection, tuple):
+        # get_db returned an error response
+        return db_connection
+    
+    cursor = None
 
     # Input validation for empty fields
-    if user_id is None:
+    if user_id is None or user_id == '':
         return jsonify({'message': 'user ID is missing'}), 400
     
-    if user_email is None:
+    if user_email is None or user_email == '':
         return jsonify({'message': 'user email is missing'}), 400
     
-    if category is None:
+    if category is None or category == '':
         return jsonify({'message': 'Event category is missing'}), 400
     
-    if rso is None and category != 'public':
+    if rso is None and category != 'public' or rso == '':
         return jsonify({'message': 'RSO is missing, public events must have an RSO'}), 400
 
-    if name is None:
+    if name is None or name == '':
         return jsonify({'message': 'Event name is missing'}), 400
     
-    if time is None:
+    if time is None or time == '':
         return jsonify({'message': 'Event time is missing'}), 400
     
-    if description is None:
+    if description is None or description == '':
         return jsonify({'message': 'Event description is missing'}), 400
 
-    if location is None:
+    if location is None or location == '':
         return jsonify({'message': 'Event location is missing'}), 400
     
-    if phone is None:
+    if phone is None or phone == '':
         return jsonify({'message': 'Event phone is missing'}), 400
     
-    if contact_email is None:
+    if contact_email is None or contact_email == '':
         return jsonify({'message': 'Event email is missing'}), 400
     
     # Validate user id
@@ -60,9 +62,11 @@ def add_event_handler(data):
         cursor.execute("SELECT * FROM users WHERE id = %s", (user_id,))
         user = cursor.fetchone()
     except psycopg2.Error as e:
+        print(f"Error: {e}")
         return jsonify({'message': 'Error while trying to select from users table.'}), 500
     finally:
-        cursor.close()
+        if cursor is not None:
+            cursor.close()
 
     if user is None:
         return jsonify({'message': 'Invalid user ID. User does not exist.'}), 401
@@ -73,9 +77,11 @@ def add_event_handler(data):
         cursor.execute("SELECT * FROM universities WHERE email_domain = %s", (user_email.split('@')[1],))
         university = cursor.fetchone()
     except psycopg2.Error as e:
+        print(f"Error: {e}")
         return jsonify({'message': 'Error while trying to select from universities table.'}), 500
     finally:
-        cursor.close()
+        if cursor is not None:
+            cursor.close()
 
     # If the university doesn't exist, return an error
     if university is None:
@@ -90,10 +96,12 @@ def add_event_handler(data):
             cursor.execute("INSERT INTO pending_events (university, author_id, approved, category, name, time, description, location, phone, email) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", (university, user_id, False, category, name, time, description, location, phone, contact_email))
             db_connection.commit()
             return jsonify({'message': 'Public event submitted for approval'}), 200
-        except Exception as e:
+        except psycopg2.Error as e:
+            print(f"Error: {e}")
             return jsonify({'message': 'Error submitting public event for approval. SQL query failed.'}), 500
         finally:
-            cursor.close()
+            if cursor is not None:
+                cursor.close()
     
     # If the event isn't public, insert the event into the database
     # Validate RSO ID
@@ -102,9 +110,11 @@ def add_event_handler(data):
         cursor.execute("SELECT * FROM rso WHERE id = %s", (rso,))
         rso = cursor.fetchone()
     except psycopg2.Error as e:
+        print(f"Error: {e}")
         return jsonify({'message': 'Error while trying to select from rso table.'}), 500
     finally:
-        cursor.close()
+        if cursor is not None:
+            cursor.close()
 
     if rso is None:
         return jsonify({'message': 'Invalid RSO ID. RSO does not exist.'}), 401
@@ -117,9 +127,11 @@ def add_event_handler(data):
         cursor.execute("SELECT * FROM rso WHERE id = %s AND admin = %s", (rso, user_id))
         results = cursor.fetchone()
     except psycopg2.Error as e:
+        print(f"Error: {e}")
         return jsonify({'message': 'Error while trying to select from rso table.'}), 500
     finally:
-        cursor.close()
+        if cursor is not None:
+            cursor.close()
 
     if results is None:
         return jsonify({'message': 'Invalid user authorization. User is not the admin of this RSO.'}), 401
@@ -131,7 +143,9 @@ def add_event_handler(data):
             (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", (university, user_id, True, category, name, time, description, location, phone, contact_email, rso))
         db_connection.commit()
         return jsonify({'message': 'Event added successfully'}), 200
-    except Exception as e:
+    except psycopg2.Error as e:
+        print(f"Error: {e}")
         return jsonify({'message': 'Error adding event to database. SQL query failed.'}), 500
     finally:
-        cursor.close()
+        if cursor is not None:
+            cursor.close()
