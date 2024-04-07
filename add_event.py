@@ -90,6 +90,15 @@ def add_event_handler(data):
             return jsonify({'message': 'Error submitting public event for approval. SQL query failed.'}), 500
     
     # If the event isn't public, insert the event into the database
+    cursor = db_connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    cursor.execute("SELECT * FROM rsos WHERE id = %s", (rso,))
+    rso = cursor.fetchone()
+    cursor.close()
+
+    if rso is None:
+        return jsonify({'message': 'Invalid RSO ID. RSO does not exist.'}), 401
+
+
     try:
         cursor = db_connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
         cursor.execute("INSERT INTO events (university, author_id, approved, category, name, date, time, description, location, phone, email, rso) VALUES \
