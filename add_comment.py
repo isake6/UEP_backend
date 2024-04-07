@@ -4,9 +4,13 @@ from database import get_db
 
 def add_comment_handler(data):
     # Get the input from the request
-    user_id = data['user_id']
-    event_id = data['event_id']
-    comment = data['comment']
+    try:
+        user_id = data['user_id']
+        event_id = data['event_id']
+        comment = data['comment']
+    except KeyError as e:
+        print(f"Error: Missing field {e} in request data")
+        return jsonify({'message': f'Missing field {e} in request data'}), 400
 
     print('Received add comment request:', data)
 

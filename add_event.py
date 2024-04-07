@@ -4,16 +4,20 @@ from database import get_db
 
 def add_event_handler(data):
     # Get the input from the request
-    user_id = data['user_id']
-    user_email = data['user_email']
-    rso = data['rso']
-    name = data['name']
-    category = data['category']
-    time = data['time']
-    description = data['description']
-    location = data['location']
-    phone = data['phone']
-    contact_email = data['contact_email']
+    try:
+        user_id = data['user_id']
+        user_email = data['user_email']
+        rso = data['rso']
+        name = data['name']
+        category = data['category']
+        time = data['time']
+        description = data['description']
+        location = data['location']
+        phone = data['phone']
+        contact_email = data['contact_email']
+    except KeyError as e:
+        print(f"Error: Missing field {e} in request data")
+        return jsonify({'message': f'Missing field {e} in request data'}), 400
 
     print('Received add event request:', data)
 
