@@ -87,7 +87,7 @@ def add_event_handler(data):
     if category == 'public':
         try:
             cursor = db_connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
-            cursor.execute("INSERT INTO pending_events (university, user_id, approved, category, name, time, description, location, phone, email) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", (university, user_id, False, category, name, time, description, location, phone, contact_email))
+            cursor.execute("INSERT INTO pending_events (university, author_id, approved, category, name, time, description, location, phone, email) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", (university, user_id, False, category, name, time, description, location, phone, contact_email))
             db_connection.commit()
             return jsonify({'message': 'Public event submitted for approval'}), 200
         except Exception as e:
@@ -127,7 +127,7 @@ def add_event_handler(data):
     # Add the event to the database
     try:
         cursor = db_connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        cursor.execute("INSERT INTO events (university, user_id, approved, category, name, time, description, location, phone, email, rso) VALUES \
+        cursor.execute("INSERT INTO events (university, author_id, approved, category, name, time, description, location, phone, email, rso) VALUES \
             (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", (university, user_id, True, category, name, time, description, location, phone, contact_email, rso))
         db_connection.commit()
         return jsonify({'message': 'Event added successfully'}), 200

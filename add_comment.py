@@ -55,7 +55,7 @@ def add_comment_handler(data):
     # Insert the comment into the database
     try:
         cursor = db_connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-        cursor.execute('INSERT INTO comments (user_id, event_id, comment, created_time) VALUES (%s, %s, %s, NOW())', (user_id, event_id, comment))
+        cursor.execute('INSERT INTO comments (author_id, event_id, comment, created_time) VALUES (%s, %s, %s, NOW())', (user_id, event_id, comment))
         db_connection.commit()
     except Exception as e:
         return jsonify({'message': 'Error while trying to insert into comments table.'}), 500
