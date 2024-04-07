@@ -24,7 +24,6 @@ def signup_handler(data):
     print('Received signup request:', data)
 
     # Input validation
-    # If input is missing, return an error
     if email is None:
         return jsonify({'message': 'email is missing'}), 400
     
@@ -39,6 +38,15 @@ def signup_handler(data):
     
     if role is None:
         return jsonify({'message': 'Role is missing'}), 400
+    
+    # Check if the email domain is valid
+    cursor = db_connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    cursor.execute("SELECT * FROM universities WHERE email_domain = %s", (email.split('@')[1],))
+    university = cursor.fetchone()
+    cursor.close()
+
+    if university is None:
+        return jsonify({'message': 'Invalid email domain. There are no existing universities with this email domain.'}), 401
     
     # Check if the user exists in the database
     cursor = db_connection.cursor(cursor_factory=psycopg2.extras.DictCursor)

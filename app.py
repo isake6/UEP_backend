@@ -1,6 +1,6 @@
 from flask import Flask, request, make_response
 from flask_cors import CORS
-import login, add_user
+import login, add_user, add_event
 import json
 
 app = Flask(__name__)
@@ -16,6 +16,12 @@ def login_route():
 def create_route():
 	data = request.get_json()
 	result = add_user.signup_handler(data)
+	return result
+
+@app.route('/add_event', methods=['POST'])
+def add_event_route():
+	data = request.get_json()
+	result = add_event.add_event_handler(data)
 	return result
 
 @app.errorhandler(500)
