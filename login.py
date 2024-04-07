@@ -43,4 +43,4 @@ def login_handler(data):
         return jsonify({'message': 'Incorrect password'}), 401
     
     # If the login is successful, return the user's information
-    return jsonify({'first_name': user['first_name'], 'last_name': user['last_name'], 'email': user['email'], 'role': user['role']}), 200
+    return jsonify({'id': user['id'], 'first_name': user['first_name'], 'last_name': user['last_name'], 'email': user['email'], 'role': user['role']}), 200
