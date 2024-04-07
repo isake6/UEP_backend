@@ -2,7 +2,7 @@ from flask import Flask, request, make_response, g
 from flask_cors import CORS
 import login
 import add_user
-import add_event
+import add_event, get_events
 import add_comment, update_comment
 import add_rating
 from database import db_pool
@@ -35,6 +35,12 @@ def create_route():
 def add_event_route():
 	data = request.get_json()
 	result = add_event.add_event_handler(data)
+	return result
+
+@app.route('/get_events', methods=['POST'])
+def get_events_route():
+	data = request.get_json()
+	result = get_events.get_events_handler(data)
 	return result
 
 @app.route('/add_comment', methods=['POST'])
