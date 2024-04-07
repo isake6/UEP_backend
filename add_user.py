@@ -1,58 +1,71 @@
-import boto3
 import psycopg2.extras
-from json import dumps, loads
-import os
-from flask import Response, jsonify
-
-# Database connection
-db_connection = psycopg2.connect(
-    host=os.getenv('DB_HOST'),
-    port=os.getenv('DB_PORT'),
-    user=os.getenv('DB_USER'),
-    password=os.getenv('DB_PASSWORD'),
-    database=os.getenv('DB_NAME')
-)
+from flask import jsonify
+from database import get_db
 
 def signup_handler(data):
     # Get the input from the request
-    email = data['email']
-    password = data['password']
-    first_name = data['firstName']
-    last_name = data['lastName']
-    role = data['role']
+    try:
+        email = data['email']
+        password = data['password']
+        first_name = data['firstName']
+        last_name = data['lastName']
+        role = data['role']
+    except KeyError as e:
+        print(f"Error: Missing field {e} in request data")
+        return jsonify({'message': f'Missing field {e} in request data'}), 400
+    
+    # Database connection
+    db_connection = get_db()
+    if isinstance(db_connection, tuple):
+        # get_db returned an error response
+        return db_connection
+
+    cursor = None
 
     print('Received signup request:', data)
 
     # Input validation
-    if email is None:
+    if email is None or email == '':
         return jsonify({'message': 'email is missing'}), 400
     
-    if password is None:
+    if password is None or password == '':
         return jsonify({'message': 'Password is missing'}), 400
     
-    if first_name is None:
+    if first_name is None or first_name == '':
         return jsonify({'message': 'First name is missing'}), 400
     
-    if last_name is None:
+    if last_name is None or last_name == '':
         return jsonify({'message': 'Last name is missing'}), 400
     
-    if role is None:
+    if role is None or role == '':
         return jsonify({'message': 'Role is missing'}), 400
     
     # Check if the email domain is valid
-    cursor = db_connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
-    cursor.execute("SELECT * FROM universities WHERE email_domain = %s", (email.split('@')[1],))
-    university = cursor.fetchone()
-    cursor.close()
+    try:
+        cursor = db_connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        cursor.execute("SELECT * FROM universities WHERE email_domain = %s", (email.split('@')[1],))
+        university = cursor.fetchone()
+    except psycopg2.Error as e:
+        print(f"Error: {e}")
+        return jsonify({'message': 'Error while trying to select from universities table.'}), 500
+    finally:
+        if cursor is not None:
+            cursor.close()
 
     if university is None:
         return jsonify({'message': 'Invalid email domain. There are no existing universities with this email domain.'}), 401
     
     # Check if the user exists in the database
-    cursor = db_connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
-    cursor.execute("SELECT * FROM users WHERE email = %s", (email,))
-    user = cursor.fetchone()
-    cursor.close()
+    try:
+        cursor = db_connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        cursor.execute("SELECT * FROM users WHERE email = %s", (email,))
+        user = cursor.fetchone()
+    except psycopg2.Error as e:
+        print(f"Error: {e}")
+        return jsonify({'message': 'Error while trying to select from users table.'}), 500
+    finally:
+        if cursor is not None:
+            cursor.close()
 
     # If user already exists, return an error
     if user is not None:
@@ -63,9 +76,12 @@ def signup_handler(data):
         cursor = db_connection.cursor()
         cursor.execute("INSERT INTO users (email, password, first_name, last_name, role) VALUES (%s, %s, %s, %s, %s)", (email, password, first_name, last_name, role))
         db_connection.commit()
-        cursor.close()
-    except Exception as e:
+    except psycopg2.Error as e:
+        print(f"Error: {e}")
         return jsonify({'message': 'Error adding user to database. SQL query could not be completed.'}), 500
+    finally:
+        if cursor is not None:
+            cursor.close()
 
     # If the signup is successful, return 200 status code
     return jsonify({'message': 'Signup successful.'}), 200
