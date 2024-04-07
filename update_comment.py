@@ -73,3 +73,5 @@ def update_comment_handler(data):
     finally:
         if cursor is not None:
             cursor.close()
+        
+    return jsonify({'message': 'Comment updated successfully'}), 200
