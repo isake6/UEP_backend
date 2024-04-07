@@ -91,7 +91,7 @@ def add_event_handler(data):
     
     # If the event isn't public, insert the event into the database
     cursor = db_connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
-    cursor.execute("SELECT * FROM rso WHERE id = %s", (rso))
+    cursor.execute("SELECT * FROM rso WHERE id = %s", (rso,))
     rso = cursor.fetchone()
     cursor.close()
 
