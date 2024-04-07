@@ -3,15 +3,7 @@ import psycopg2.extras
 from json import dumps, loads
 import os
 from flask import Response, jsonify
-
-# Database connection
-db_connection = psycopg2.connect(
-    host=os.getenv('DB_HOST'),
-    port=os.getenv('DB_PORT'),
-    user=os.getenv('DB_USER'),
-    password=os.getenv('DB_PASSWORD'),
-    database=os.getenv('DB_NAME')
-)
+from app import get_db
 
 def add_event_handler(data):
     # Get the input from the request
@@ -28,8 +20,10 @@ def add_event_handler(data):
 
     print('Received add event request:', data)
 
+    # Database connection
+    db_connection = get_db()
+
     # Input validation for empty fields
-    
     if author_id is None:
         return jsonify({'message': 'Author ID is missing'}), 400
     
@@ -61,19 +55,27 @@ def add_event_handler(data):
         return jsonify({'message': 'Event email is missing'}), 400
     
     # Validate author id
-    cursor = db_connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
-    cursor.execute("SELECT * FROM users WHERE id = %s", (author_id,))
-    author = cursor.fetchone()
-    cursor.close()
+    try:
+        cursor = db_connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        cursor.execute("SELECT * FROM users WHERE id = %s", (author_id,))
+        author = cursor.fetchone()
+    except psycopg2.Error as e:
+        return jsonify({'message': 'Error while trying to select from users table.'}), 500
+    finally:
+        cursor.close()
 
     if author is None:
         return jsonify({'message': 'Invalid author ID. User does not exist.'}), 401
     
     # Get the university of the author
-    cursor = db_connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
-    cursor.execute("SELECT * FROM universities WHERE email_domain = %s", (author_email.split('@')[1],))
-    university = cursor.fetchone()
-    cursor.close()
+    try:
+        cursor = db_connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        cursor.execute("SELECT * FROM universities WHERE email_domain = %s", (author_email.split('@')[1],))
+        university = cursor.fetchone()
+    except psycopg2.Error as e:
+        return jsonify({'message': 'Error while trying to select from universities table.'}), 500
+    finally:
+        cursor.close()
 
     # If the university doesn't exist, return an error
     if university is None:
@@ -87,19 +89,22 @@ def add_event_handler(data):
             cursor = db_connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
             cursor.execute("INSERT INTO pending_events (university, author_id, approved, category, name, time, description, location, phone, email) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", (university, author_id, False, category, name, time, description, location, phone, email))
             db_connection.commit()
-            cursor.close()
-
             return jsonify({'message': 'Public event submitted for approval'}), 200
-        
         except Exception as e:
             return jsonify({'message': 'Error submitting public event for approval. SQL query failed.'}), 500
+        finally:
+            cursor.close()
     
     # If the event isn't public, insert the event into the database
     # Validate RSO ID
-    cursor = db_connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
-    cursor.execute("SELECT * FROM rso WHERE id = %s", (rso,))
-    rso = cursor.fetchone()
-    cursor.close()
+    try:
+        cursor = db_connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        cursor.execute("SELECT * FROM rso WHERE id = %s", (rso,))
+        rso = cursor.fetchone()
+    except psycopg2.Error as e:
+        return jsonify({'message': 'Error while trying to select from rso table.'}), 500
+    finally:
+        cursor.close()
 
     if rso is None:
         return jsonify({'message': 'Invalid RSO ID. RSO does not exist.'}), 401
@@ -107,10 +112,14 @@ def add_event_handler(data):
     rso = rso['id']
 
     # Validate that the author is the admin of the RSO
-    cursor = db_connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
-    cursor.execute("SELECT * FROM rso WHERE id = %s AND admin = %s", (rso, author_id))
-    results = cursor.fetchone()
-    cursor.close()
+    try:
+        cursor = db_connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        cursor.execute("SELECT * FROM rso WHERE id = %s AND admin = %s", (rso, author_id))
+        results = cursor.fetchone()
+    except psycopg2.Error as e:
+        return jsonify({'message': 'Error while trying to select from rso table.'}), 500
+    finally:
+        cursor.close()
 
     if results is None:
         return jsonify({'message': 'Invalid user authorization. User is not the admin of this RSO.'}), 401
@@ -121,9 +130,8 @@ def add_event_handler(data):
         cursor.execute("INSERT INTO events (university, author_id, approved, category, name, time, description, location, phone, email, rso) VALUES \
             (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", (university, author_id, True, category, name, time, description, location, phone, email, rso))
         db_connection.commit()
-        cursor.close()
-
         return jsonify({'message': 'Event added successfully'}), 200
-    
     except Exception as e:
         return jsonify({'message': 'Error adding event to database. SQL query failed.'}), 500
+    finally:
+        cursor.close()
