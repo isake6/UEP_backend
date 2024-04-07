@@ -97,6 +97,8 @@ def add_event_handler(data):
 
     if rso is None:
         return jsonify({'message': 'Invalid RSO ID. RSO does not exist.'}), 401
+    
+    rso = rso['id']
 
 
     try:
