@@ -55,7 +55,7 @@ def add_rating_handler(data):
     # Insert the rating into the database
     try:
         cursor = db_connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-        cursor.execute('INSERT INTO ratings (author_id, event_id, rating, created_time) VALUES (%s, %s, %s, NOW())', (user_id, event_id, rating))
+        cursor.execute('INSERT INTO ratings (author_id, event_id, rating) VALUES (%s, %s, %s, NOW())', (user_id, event_id, rating))
         db_connection.commit()
     except Exception as e:
         return jsonify({'message': 'Error while trying to insert into ratings table.'}), 500
