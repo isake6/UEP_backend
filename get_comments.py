@@ -1,16 +1,14 @@
 import psycopg2.extras
-from flask import jsonify
+from flask import jsonify, request
 from database import get_db
 
-def get_comments_handler(data):
+def get_comments_handler():
     # Get the input from the request
-    try:
-        event_id = data['event_id']
-    except KeyError as e:
-        print(f"Error: Missing field {e} in request data")
-        return jsonify({'message': f'Missing field {e} in request data'}), 400
+    event_id = request.args.get('event_id')
+    if event_id is None:
+        return jsonify({'message': 'Event ID is missing'}), 400
 
-    print('Received get comments request:', data)
+    print('Received get comments request:')
 
     # Database connection
     db_connection = get_db()

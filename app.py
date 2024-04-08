@@ -3,8 +3,8 @@ from flask_cors import CORS
 import login
 import add_user
 import add_event, get_events
-import add_comment, update_comment
-import add_rating
+import add_comment, update_comment, get_comments
+import add_rating, get_user_rating
 from database import db_pool
 
 app = Flask(__name__)
@@ -43,6 +43,11 @@ def get_events_route():
 	result = get_events.get_events_handler(data)
 	return result
 
+@app.route('/get_comments', methods=['GET'])
+def get_comments_route():
+	result = get_comments.get_comments_handler()
+	return result
+
 @app.route('/add_comment', methods=['POST'])
 def add_comment_route():
 	data = request.get_json()
@@ -53,6 +58,12 @@ def add_comment_route():
 def update_comment_route():
 	data = request.get_json()
 	result = update_comment.update_comment_handler(data)
+	return result
+
+@app.route('/get_user_rating', methods=['POST'])
+def get_user_rating_route():
+	data = request.get_json()
+	result = get_user_rating.get_user_rating_handler(data)
 	return result
 
 @app.route('/add_rating', methods=['POST'])
