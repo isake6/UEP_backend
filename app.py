@@ -8,7 +8,7 @@ import add_rating, get_user_rating
 from database import db_pool
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": ["https://lobster-app-g8oyg.ondigitalocean.app", "http://159.203.80.189", "http://localhost:3000", "https://somethingorother.xyz"]}}, supports_credentials=True)
+CORS(app, resources={r"/*": {"origins": ["https://lobster-app-g8oyg.ondigitalocean.app", "http://66.158.232.124", "http://159.203.80.189", "http://localhost:3000", "https://somethingorother.xyz"]}}, supports_credentials=True)
 
 
 @app.teardown_appcontext
