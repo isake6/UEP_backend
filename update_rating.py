@@ -43,6 +43,10 @@ def update_rating_handler(data):
     if result is None:
         return jsonify({'message': 'Rating ID is not in the database'}), 401
     
+    # Validate rating range
+    if new_rating < 1 or new_rating > 5:
+        return jsonify({'message': 'Rating must be between 1 and 5'}), 400
+    
     # Update rating
     try:
         cursor = db_connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
