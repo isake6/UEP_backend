@@ -75,7 +75,7 @@ def add_rso_handler(data):
     try:
         cursor = db_connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
         query = "SELECT DISTINCT id FROM users WHERE email IN (%s) AND university_id = %s"
-        cursor.execute(query, (tuple(emails_to_check), university_id))
+        cursor.execute(query, (tuple(emails_to_check), university_id,))
         results = cursor.fetchall()
         if len(results) == len(emails_to_check):
             print("All users exist and are from the same university.")
