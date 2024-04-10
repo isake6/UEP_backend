@@ -74,8 +74,9 @@ def add_rso_handler(data):
     emails_to_check = [user1_email, user2_email, user3_email, user4_email, user5_email]
     try:
         cursor = db_connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        query = "SELECT DISTINCT id FROM users WHERE email IN (%s) AND university_id = %s"
-        cursor.execute(query, (tuple(emails_to_check), university_id,))
+        placeholders = ', '.join(['%s'] * len(emails_to_check))
+        query = f"SELECT DISTINCT id FROM users WHERE email IN ({placeholders}) AND university_id = %s"
+        cursor.execute(query, (*emails_to_check, university_id))
         results = cursor.fetchall()
         if len(results) == len(emails_to_check):
             print("All users exist and are from the same university.")
@@ -86,7 +87,7 @@ def add_rso_handler(data):
             return jsonify({'message': 'Not all users exist or are from different universities'}), 401
     except psycopg2.Error as e:
         print(f"Error: {e}")
-        return jsonify({'message': 'Error while trying to validate users.'}), 500
+        return jsonify({'message': 'Error while trying to validate users.', 'query': query}), 500
     finally:
         if cursor is not None:
             cursor.close()
