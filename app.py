@@ -4,7 +4,7 @@ import login
 import add_user
 import add_event, get_events
 import add_comment, update_comment, get_comments
-import add_rating, get_user_rating
+import add_rating, get_user_rating, update_rating
 import add_rso, get_managed_rsos
 from database import db_pool
 
@@ -127,6 +127,16 @@ def get_user_rating_route():
 def add_rating_route():
 	data = request.get_json()
 	result = add_rating.add_rating_handler(data)
+	return result
+
+# Summary: This route is used to update a rating in the database.
+# Method: POST
+# Input: rating_id, new_rating
+# Output: updates rating in database with new rating
+@app.route('/update_rating', methods=['POST'])
+def update_rating_route():
+	data = request.get_json()
+	result = update_rating.update_rating_handler(data)
 	return result
 
 @app.errorhandler(500)

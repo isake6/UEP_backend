@@ -76,6 +76,10 @@ def add_rating_handler(data):
 
     if duplicate_ratings is not None:
         return jsonify({'message': 'User has already rated this event'}), 401
+    
+    # Validate rating range
+    if rating < 1 or rating > 5:
+        return jsonify({'message': 'Rating must be between 1 and 5'}), 400
 
     # Insert the rating into the database
     try:
