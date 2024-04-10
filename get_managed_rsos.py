@@ -51,7 +51,7 @@ def get_managed_rsos_handler(data):
         if cursor is not None:
             cursor.close()
 
-    if results is None:
+    if not results:
         return jsonify({'message': 'The user is not an admin of any RSO'}), 401
     
     return jsonify({'RSOs': results}), 200
