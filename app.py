@@ -40,6 +40,16 @@ def create_route():
 	result = add_user.signup_handler(data)
 	return result
 
+# Summary: This route is used to get all RSOs managed by a user.
+# Method: POST
+# Input: user_id
+# Output: returns all RSOs managed by this user as a JSON object
+@app.route('/get_managed_rsos', methods=['POST'])
+def get_managed_rsos_route():
+	data = request.get_json()
+	result = get_managed_rsos.get_managed_rsos_handler(data)
+	return result
+
 # Summary: This route is used to add an RSO to the database.
 # Method: POST
 # Input: user1_email, user2_email, user3_email, user4_email, user5_email, admin_email, name, university_id
