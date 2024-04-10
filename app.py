@@ -5,6 +5,7 @@ import add_user
 import add_event, get_events
 import add_comment, update_comment, get_comments
 import add_rating, get_user_rating
+import add_rso, get_managed_rsos
 from database import db_pool
 
 app = Flask(__name__)
@@ -37,6 +38,16 @@ def login_route():
 def create_route():
 	data = request.get_json()
 	result = add_user.signup_handler(data)
+	return result
+
+# Summary: This route is used to add an RSO to the database.
+# Method: POST
+# Input: user1_email, user2_email, user3_email, user4_email, user5_email, admin_email, name, university_id
+# Output: adds RSO to database
+@app.route('/add_rso', methods=['POST'])
+def add_rso_route():
+	data = request.get_json()
+	result = add_rso.add_rso_handler(data)
 	return result
 
 # Summary: This route is used to add an event to the database.

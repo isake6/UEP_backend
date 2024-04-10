@@ -55,6 +55,8 @@ def signup_handler(data):
     if university is None:
         return jsonify({'message': 'Invalid email domain. There are no existing universities with this email domain.'}), 401
     
+    university_id = university['id']
+
     # Check if the user exists in the database
     try:
         cursor = db_connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
@@ -74,7 +76,7 @@ def signup_handler(data):
     # Add the user to the database
     try:
         cursor = db_connection.cursor()
-        cursor.execute("INSERT INTO users (email, password, first_name, last_name, role) VALUES (%s, %s, %s, %s, %s)", (email, password, first_name, last_name, role))
+        cursor.execute("INSERT INTO users (email, password, first_name, last_name, role, university_id) VALUES (%s, %s, %s, %s, %s, %s)", (email, password, first_name, last_name, role, university_id))
         db_connection.commit()
     except psycopg2.Error as e:
         print(f"Error: {e}")
