@@ -2,7 +2,7 @@ import psycopg2.extras
 from flask import jsonify
 from database import get_db
 
-def get_managed_rso_handler(data):
+def get_managed_rsos_handler(data):
     # Get the input from the request
     try:
         user_id = data['user_id']
