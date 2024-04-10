@@ -82,7 +82,7 @@ def add_event_handler(data):
         university = cursor.fetchone()
     except psycopg2.Error as e:
         print(f"Error: {e}")
-        return jsonify({'message': 'Error while trying to select from universities table.'}), 500
+        return jsonify({'message': 'Error while trying to select from universities table based on email domain.'}), 500
     finally:
         if cursor is not None:
             cursor.close()
