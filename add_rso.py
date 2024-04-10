@@ -120,6 +120,7 @@ def add_rso_handler(data):
         results = cursor.fetchone()[0]
         cursor.execute("INSERT INTO rso_members (id, rso_id) VALUES (%s, %s), (%s, %s), (%s, %s), (%s, %s), (%s, %s)", (user1_id, results, user2_id, results, user3_id, results, user4_id, results, user5_id, results))
         cursor.execute("UPDATE rso SET admin = %s WHERE id = %s", (admin_id, results))
+        db_connection.commit()
     except psycopg2.Error as e:
         print(f"Error: {e}")
         return jsonify({'message': 'Error while trying to insert into rso table.'}), 500
