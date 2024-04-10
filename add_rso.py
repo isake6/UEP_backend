@@ -127,4 +127,4 @@ def add_rso_handler(data):
         if cursor is not None:
             cursor.close()
 
-    return jsonify({'message': 'RSO added successfully.', 'id':results}, (results)), 200
+    return jsonify({'message': 'RSO added successfully.', 'id':results}), 200
