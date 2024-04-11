@@ -3,7 +3,7 @@ from flask_cors import CORS
 import login
 import update_university
 import add_user
-import add_event, get_events
+import add_event, get_events, get_pending_public_events
 import add_comment, update_comment, get_comments, delete_comment
 import add_rating, get_user_rating, update_rating
 import add_rso, get_managed_rsos
@@ -89,6 +89,16 @@ def add_event_route():
 def get_events_route():
 	data = request.get_json()
 	result = get_events.get_events_handler(data)
+	return result
+
+# Summary: This route is used to get pending public events from the database.
+# Method: POST
+# Input: user_id, university_id
+# Output: returns all pending public events for this user as a JSON object
+@app.route('/get_pending_public_events', methods=['POST'])
+def get_pending_public_events_route():
+	data = request.get_json()
+	result = get_pending_public_events.get_pending_public_events_handler(data)
 	return result
 
 # Summary: This route is used to get comments for an event from the database.
