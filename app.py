@@ -3,7 +3,7 @@ from flask_cors import CORS
 import login
 import add_user
 import add_event, get_events
-import add_comment, update_comment, get_comments
+import add_comment, update_comment, get_comments, delete_comment
 import add_rating, get_user_rating, update_rating
 import add_rso, get_managed_rsos
 from database import db_pool
@@ -107,6 +107,12 @@ def add_comment_route():
 def update_comment_route():
 	data = request.get_json()
 	result = update_comment.update_comment_handler(data)
+	return result
+
+@app.route('/delete_comment', methods=['POST'])
+def delete_comment_route():
+	data = request.get_json()
+	result = delete_comment.delete_comment_handler(data)
 	return result
 
 # Summary: This route is used to get a user's rating for an event from the database.
