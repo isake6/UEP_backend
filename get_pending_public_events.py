@@ -76,7 +76,7 @@ def get_pending_public_events_handler(data):
     # Get all pending public events for this university
     try:
         cursor = db_connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-        cursor.execute('SELECT * FROM pending_events WHERE university_id = %s', (university_id,))
+        cursor.execute('SELECT * FROM pending_events WHERE university = %s', (university_id,))
         result = cursor.fetchall()
     except psycopg2.Error as e:
         print(f"Error: {e}")
