@@ -1,6 +1,7 @@
 from flask import Flask, request, make_response, g
 from flask_cors import CORS
 import login
+import update_university
 import add_user
 import add_event, get_events
 import add_comment, update_comment, get_comments, delete_comment
@@ -28,6 +29,16 @@ def close_db(e=None):
 def login_route():
 	data = request.get_json()
 	result = login.login_handler(data)
+	return result
+
+# Summary: This route is used to update a university in the database.
+# Method: POST
+# Input: user_id, university_id, new_name, new_location, new_description
+# Output: updates university in database
+@app.route('/update_university', methods=['POST'])
+def update_university_route():
+	data = request.get_json()
+	result = update_university.update_university_handler(data)
 	return result
 
 # Summary: This route is used to create a new user.
