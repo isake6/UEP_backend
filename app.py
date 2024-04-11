@@ -3,7 +3,7 @@ from flask_cors import CORS
 import login
 import update_university
 import add_user
-import add_event, get_events, get_pending_public_events
+import add_event, get_events, get_pending_public_events, approve_pending_public_event
 import add_comment, update_comment, get_comments, delete_comment
 import add_rating, get_user_rating, update_rating
 import add_rso, get_managed_rsos
@@ -99,6 +99,16 @@ def get_events_route():
 def get_pending_public_events_route():
 	data = request.get_json()
 	result = get_pending_public_events.get_pending_public_events_handler(data)
+	return result
+
+# Summary: This route is used to approve a pending public event in the database.
+# Method: POST
+# Input: user_id, university_id, event_id
+# Output: approves pending public event in database
+@app.route('/approve_pending_public_event', methods=['POST'])
+def approve_pending_public_event_route():
+	data = request.get_json()
+	result = approve_pending_public_event.approve_pending_public_event_handler(data)
 	return result
 
 # Summary: This route is used to get comments for an event from the database.
