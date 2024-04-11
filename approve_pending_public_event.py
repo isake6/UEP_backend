@@ -91,6 +91,21 @@ def approve_pending_public_event_handler(data):
     
     event = result
 
+    # Check if there is an overlap with existing events
+    try:
+        cursor = db_connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        cursor.execute('SELECT * FROM events WHERE location = %s AND time = %s', (event['location'], event['time']))
+        result = cursor.fetchone()
+    except psycopg2.Error as e:
+        print(f"Error: {e}")
+        return jsonify({'message': 'Error while trying to select from events table.'}), 500
+    finally:
+        if cursor is not None:
+            cursor.close()
+
+    if result is not None:
+        return jsonify({'message': 'Event overlaps with an existing event'}), 401
+
     # Remove from pending events table
     try:
         cursor = db_connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
