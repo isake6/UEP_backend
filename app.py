@@ -6,7 +6,7 @@ import add_user
 import add_event, get_events, get_pending_public_events, approve_pending_public_event, deny_pending_public_event
 import add_comment, update_comment, get_comments, delete_comment
 import add_rating, get_user_rating, update_rating
-import add_rso, get_managed_rsos
+import add_rso, get_managed_rsos, get_university_rsos
 from database import db_pool
 
 app = Flask(__name__)
@@ -49,6 +49,16 @@ def update_university_route():
 def create_route():
 	data = request.get_json()
 	result = add_user.signup_handler(data)
+	return result
+
+# Summary: This route is used to get all RSOs for a university.
+# Method: POST
+# Input: university_id
+# Output: returns all RSOs for this university as a JSON object
+@app.route('/get_university_rsos', methods=['POST'])
+def get_university_rsos_route():
+	data = request.get_json()
+	result = get_university_rsos.get_university_rsos_handler(data)
 	return result
 
 # Summary: This route is used to get all RSOs managed by a user.
