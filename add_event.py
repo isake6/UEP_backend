@@ -39,8 +39,8 @@ def add_event_handler(data):
     if category is None or category == '':
         return jsonify({'message': 'Event category is missing'}), 400
     
-    if rso is None and category != 'public' or rso == '':
-        return jsonify({'message': 'RSO is missing, public events must have an RSO'}), 400
+    if rso is None and category != 'public' or rso == '' and category != 'public':
+        return jsonify({'message': 'RSO is missing, private or RSO events must have an RSO'}), 400
 
     if name is None or name == '':
         return jsonify({'message': 'Event name is missing'}), 400
