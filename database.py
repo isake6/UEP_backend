@@ -1,17 +1,17 @@
 from flask import g, jsonify
 from psycopg2 import pool
 import psycopg2.extras
-import os
+from setup_local_db import mypassword
 
 # Create a connection pool
 db_pool = psycopg2.pool.SimpleConnectionPool(
     minconn=1,
     maxconn=10,
-    host=os.getenv('DB_HOST'),
-    port=os.getenv('DB_PORT'),
-    user=os.getenv('DB_USER'),
-    password=os.getenv('DB_PASSWORD'),
-    database=os.getenv('DB_NAME')
+    host='localhost',
+    port='5432',
+    user='postgres',
+    password=mypassword,
+    database='uep_db'
 )
 
 def get_db():

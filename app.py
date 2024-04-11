@@ -9,7 +9,7 @@ import add_rso, get_managed_rsos
 from database import db_pool
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": ["http://localhost:3000",]}}, supports_credentials=True)
+CORS(app, resources={r"/*": {"origins": ["http://localhost:3000", "http://localhost:8000"]}}, supports_credentials=True)
 
 
 @app.teardown_appcontext

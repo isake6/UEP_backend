@@ -40,23 +40,6 @@ def signup_handler(data):
     if role is None or role == '':
         return jsonify({'message': 'Role is missing'}), 400
     
-    # Check if the email domain is valid
-    try:
-        cursor = db_connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        cursor.execute("SELECT * FROM universities WHERE email_domain = %s", (email.split('@')[1],))
-        university = cursor.fetchone()
-    except psycopg2.Error as e:
-        print(f"Error: {e}")
-        return jsonify({'message': 'Error while trying to select from universities table.'}), 500
-    finally:
-        if cursor is not None:
-            cursor.close()
-
-    if university is None:
-        return jsonify({'message': 'Invalid email domain. There are no existing universities with this email domain.'}), 401
-    
-    university_id = university['id']
-
     # Check if the user exists in the database
     try:
         cursor = db_connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
@@ -73,10 +56,61 @@ def signup_handler(data):
     if user is not None:
         return jsonify({'message': 'Email taken. User already exists.'}), 401
     
+    # Check if the email domain is valid
+    if role != 'super admin':
+        try:
+            cursor = db_connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
+            cursor.execute("SELECT * FROM universities WHERE email_domain = %s", (email.split('@')[1],))
+            university = cursor.fetchone()
+        except psycopg2.Error as e:
+            print(f"Error: {e}")
+            return jsonify({'message': 'Error while trying to select from universities table.'}), 500
+        finally:
+            if cursor is not None:
+                cursor.close()
+
+        if university is None:
+            return jsonify({'message': 'Invalid email domain. There are no existing universities with this email domain.'}), 401
+        
+        university_id = university['id']
+    
+    else:
+        try:
+            cursor = db_connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
+            cursor.execute("SELECT id FROM universities WHERE email_domain = %s", (email.split('@')[1],))
+            university_check = cursor.fetchone()
+            if university_check is not None:
+                return jsonify({'message': 'Invalid email domain. A university with this email domain already exists.'}), 401
+            cursor.execute("INSERT INTO universities (name, email_domain) VALUES (%s, %s) RETURNING id", ((email + ' University'), email.split('@')[1]))
+            new_university = cursor.fetchone()
+        except psycopg2.Error as e:
+            print(f"Error: {e}")
+            return jsonify({'message': 'Error adding university to database. SQL query could not be completed.'}), 500
+        finally:
+            if cursor is not None:
+                cursor.close()
+
+        university_id = new_university['id']
+    
     # Add the user to the database
     try:
-        cursor = db_connection.cursor()
+        cursor = db_connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
         cursor.execute("INSERT INTO users (email, password, first_name, last_name, role, university_id) VALUES (%s, %s, %s, %s, %s, %s)", (email, password, first_name, last_name, role, university_id))
+        # Update the admin of the new university
+        if role == 'super admin':
+            try:
+                cursor.execute("SELECT id FROM users WHERE email = %s", (email,))
+                admin = cursor.fetchone()
+                if admin is None:
+                    return jsonify({'message': 'Error updating university admin. User not found.'}), 500
+                admin = admin['id']
+                cursor.execute("UPDATE universities SET super_admin = %s WHERE id = %s", (admin, university_id))
+            except psycopg2.Error as e:
+                print(f"Error: {e}")
+                return jsonify({'message': 'Error updating university admin. SQL query could not be completed.'}), 500
+            finally:
+                if cursor is not None:
+                    cursor.close()
         db_connection.commit()
     except psycopg2.Error as e:
         print(f"Error: {e}")
