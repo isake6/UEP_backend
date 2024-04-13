@@ -202,12 +202,13 @@ def deny_pending_public_event_route():
 	return result
 
 # Summary: This route is used to get comments for an event from the database.
-# Method: GET
-# Input: event_id included in URL as ?event_id=<event_id>
+# Method: POST
+# Input: event_id
 # Output: returns all comments for this event as a JSON object
-@app.route('/get_comments', methods=['GET'])
+@app.route('/get_comments', methods=['POST'])
 def get_comments_route():
-	result = get_comments.get_comments_handler()
+	data = request.get_json()
+	result = get_comments.get_comments_handler(data)
 	return result
 
 # Summary: This route is used to add a comment to an event in the database.
