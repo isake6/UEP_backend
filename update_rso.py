@@ -165,3 +165,6 @@ def update_rso_handler(data):
     finally:
         if cursor is not None:
             cursor.close()
+
+    # Return results
+    return jsonify({'message': 'RSO updated successfully'}), 200
