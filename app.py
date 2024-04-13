@@ -6,7 +6,7 @@ import add_user
 import add_event, get_events, get_pending_public_events, approve_pending_public_event, deny_pending_public_event, delete_event
 import add_comment, update_comment, get_comments, delete_comment
 import add_rating, get_user_rating, update_rating
-import add_rso, get_managed_rsos, get_university_rsos, join_rso
+import add_rso, get_managed_rsos, get_university_rsos, join_rso, leave_rso
 from database import db_pool
 
 app = Flask(__name__)
@@ -89,6 +89,16 @@ def add_rso_route():
 def join_rso_route():
 	data = request.get_json()
 	result = join_rso.join_rso_handler(data)
+	return result
+
+# Summary: This route is used to leave an RSO in the database.
+# Method: POST
+# Input: user_id, rso_id
+# Output: removes user from RSO in database
+@app.route('/leave_rso', methods=['POST'])
+def leave_rso_route():
+	data = request.get_json()
+	result = leave_rso.leave_rso_handler(data)
 	return result
 
 # Summary: This route is used to add an event to the database.

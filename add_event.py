@@ -102,7 +102,7 @@ def add_event_handler(data):
             return jsonify({'message': 'Public event submitted for approval'}), 200
         except psycopg2.Error as e:
             print(f"Error: {e}")
-            return jsonify({'message': 'Error submitting public event for approval. SQL query failed.'}), 500
+            return jsonify({'message': 'Error submitting public event for approval. SQL query failed.', 'input': data}), 500
         finally:
             if cursor is not None:
                 cursor.close()
