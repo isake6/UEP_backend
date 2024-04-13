@@ -8,7 +8,7 @@ def update_rso_handler(data):
         user_id = data['user_id']
         rso_id = data['rso_id']
         name = data['name']
-        admin = data['admin']
+        admin_email = data['admin_email']
         description = data['description']
         university_id = data['university_id']
     except KeyError as e:
@@ -35,7 +35,7 @@ def update_rso_handler(data):
     if name is None or name == '':
         return jsonify({'message': 'RSO name is missing'}), 400
     
-    if admin is None or admin == '':
+    if admin_email is None or admin_email == '':
         return jsonify({'message': 'RSO admin is missing'}), 400
     
     if description is None or description == '':
@@ -102,7 +102,22 @@ def update_rso_handler(data):
             cursor.close()
 
     if result3 is not None:
-        return jsonify({'message': 'RSO name already exists in this university'}), 401 
+        return jsonify({'message': 'RSO name already exists in this university'}), 401
+    
+    # Convert the admin email to user ID
+    try:
+        cursor = db_connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        cursor.execute('SELECT id FROM users WHERE email = %s', (admin_email,))
+        admin = cursor.fetchone()['id']
+    except psycopg2.Error as e:
+        print(f"Error: {e}")
+        return jsonify({'message': 'Error while trying to select from users table.'}), 500
+    finally:
+        if cursor is not None:
+            cursor.close()
+
+    if admin is None:
+        return jsonify({'message': 'Admin email is not in the database'}), 401
     
     # Check that the new admin is another member of the RSO
     try:

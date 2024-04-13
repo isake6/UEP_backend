@@ -93,7 +93,7 @@ def add_rso_route():
 
 # Summary: This route is used to update an RSO in the database.
 # Method: POST
-# Input: user_id, rso_id, name, admin, description, university_id
+# Input: user_id, rso_id, name, admin_email, description, university_id
 # Output: updates RSO in database
 @app.route('/update_rso', methods=['POST'])
 def update_rso_route():
