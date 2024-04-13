@@ -6,7 +6,7 @@ import add_user
 import add_event, get_events, get_pending_public_events, approve_pending_public_event, deny_pending_public_event, delete_event
 import add_comment, update_comment, get_comments, delete_comment
 import add_rating, get_user_rating, update_rating
-import add_rso, get_managed_rsos, get_university_rsos, join_rso, leave_rso
+import add_rso, get_managed_rsos, get_university_rsos, join_rso, leave_rso, update_rso, get_user_rso_list
 from database import db_pool
 
 app = Flask(__name__)
@@ -51,6 +51,16 @@ def create_route():
 	result = add_user.signup_handler(data)
 	return result
 
+# Summary: This route is used to get all RSOs a user is a member of.
+# Method: POST
+# Input: user_id
+# Output: returns all RSOs for this user as a JSON object
+@app.route('/get_user_rso_list', methods=['POST'])
+def get_user_rso_list_route():
+	data = request.get_json()
+	result = get_user_rso_list.get_user_rso_list_handler(data)
+	return result
+
 # Summary: This route is used to get all RSOs for a university.
 # Method: POST
 # Input: university_id
@@ -79,6 +89,16 @@ def get_managed_rsos_route():
 def add_rso_route():
 	data = request.get_json()
 	result = add_rso.add_rso_handler(data)
+	return result
+
+# Summary: This route is used to update an RSO in the database.
+# Method: POST
+# Input: user_id, rso_id, name, admin, description, university_id
+# Output: updates RSO in database
+@app.route('/update_rso', methods=['POST'])
+def update_rso_route():
+	data = request.get_json()
+	result = update_rso.update_rso_handler(data)
 	return result
 
 # Summary: This route is used to join an RSO in the database.

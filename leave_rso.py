@@ -47,7 +47,7 @@ def leave_rso_handler(data):
     try:
         cursor = db_connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         cursor.execute('SELECT * FROM rso WHERE id = %s', (rso_id,))
-        result = cursor.fetchone()
+        result1 = cursor.fetchone()
     except psycopg2.Error as e:
         print(f"Error: {e}")
         return jsonify({'message': 'Error while trying to select from rsos table.'}), 500
@@ -55,14 +55,14 @@ def leave_rso_handler(data):
         if cursor is not None:
             cursor.close()
 
-    if result is None:
+    if result1 is None:
         return jsonify({'message': 'RSO ID is not in the database'}), 401
     
     # Check that the user is in the RSO
     try:
         cursor = db_connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         cursor.execute('SELECT * FROM rso_members WHERE id = %s AND rso_id = %s', (user_id, rso_id))
-        result = cursor.fetchone()
+        result2 = cursor.fetchone()
     except psycopg2.Error as e:
         print(f"Error: {e}")
         return jsonify({'message': 'Error while trying to select from rso_members table.'}), 500
@@ -70,8 +70,12 @@ def leave_rso_handler(data):
         if cursor is not None:
             cursor.close()
 
-    if result is None:
+    if result2 is None:
         return jsonify({'message': 'User is not in this RSO'}), 401
+    
+    # Check if the user is the RSO admin
+    if result1['admin'] == user_id:
+        return jsonify({'message': 'Admin cannot leave the RSO. Please appoint another admin for the RSO before leaving.'}), 401
     
     # Remove the user from the RSO
     try:
