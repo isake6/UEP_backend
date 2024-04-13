@@ -92,7 +92,7 @@ def update_rso_handler(data):
     # Check that the new name does not overlap with another RSO
     try:
         cursor = db_connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-        cursor.execute('SELECT * FROM rso WHERE name = %s AND university = %s', (name, university_id))
+        cursor.execute('SELECT * FROM rso WHERE name = %s AND university = %s AND rso_id != %s', (name, university_id, rso_id))
         result3 = cursor.fetchone()
     except psycopg2.Error as e:
         print(f"Error: {e}")
