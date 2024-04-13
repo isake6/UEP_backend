@@ -6,7 +6,7 @@ import add_user
 import add_event, get_events, get_pending_public_events, approve_pending_public_event, deny_pending_public_event, delete_event
 import add_comment, update_comment, get_comments, delete_comment
 import add_rating, get_user_rating, update_rating
-import add_rso, get_managed_rsos, get_university_rsos
+import add_rso, get_managed_rsos, get_university_rsos, join_rso
 from database import db_pool
 
 app = Flask(__name__)
@@ -79,6 +79,16 @@ def get_managed_rsos_route():
 def add_rso_route():
 	data = request.get_json()
 	result = add_rso.add_rso_handler(data)
+	return result
+
+# Summary: This route is used to join an RSO in the database.
+# Method: POST
+# Input: user_id, rso_id
+# Output: adds user to RSO in database
+@app.route('/join_rso', methods=['POST'])
+def join_rso_route():
+	data = request.get_json()
+	result = join_rso.join_rso_handler(data)
 	return result
 
 # Summary: This route is used to add an event to the database.
