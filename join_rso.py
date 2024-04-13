@@ -61,7 +61,7 @@ def join_rso_handler(data):
     # Check that the user is not already in the RSO
     try:
         cursor = db_connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-        cursor.execute('SELECT * FROM rso_members WHERE user_id = %s AND rso_id = %s', (user_id, rso_id))
+        cursor.execute('SELECT * FROM rso_members WHERE id = %s AND rso_id = %s', (user_id, rso_id))
         result = cursor.fetchone()
     except psycopg2.Error as e:
         print(f"Error: {e}")
