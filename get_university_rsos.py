@@ -51,4 +51,4 @@ def get_university_rsos_handler(data):
         if cursor is not None:
             cursor.close()
 
-    return jsonify({'rsos': rsos}), 200
+    return jsonify({'rso_details': rsos}), 200
