@@ -51,5 +51,19 @@ def get_user_rso_list_handler(data):
         if cursor is not None:
             cursor.close()
 
+    # Retrieve RSO details from rso table based on rso_ids
+    rso_ids = [rso_id['rso_id'] for rso_id in rso_ids]
+
+    try:
+        cursor = db_connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        cursor.execute('SELECT DISTINCT * FROM rso WHERE id = ANY(%s)', (rso_ids,))
+        rso_details = cursor.fetchall()
+    except psycopg2.Error as e:
+        print(f"Error: {e}")
+        return jsonify({'message': 'Error while trying to select from rso table.'}), 500
+    finally:
+        if cursor is not None:
+            cursor.close()
+
     # Return results
-    return jsonify({'rso_ids': rso_ids}), 200
+    return jsonify({'rso_details': rso_details}), 200

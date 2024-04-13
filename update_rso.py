@@ -74,6 +74,10 @@ def update_rso_handler(data):
     if result1 is None:
         return jsonify({'message': 'RSO ID is not in the database'}), 401
     
+    # Check that the RSO belongs to the university
+    if result1['university'] != university_id:
+        return jsonify({'message': 'RSO does not belong to this university'}), 401
+    
     # Check that the user is the admin of the RSO
     try:
         cursor = db_connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
