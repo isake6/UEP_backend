@@ -76,7 +76,7 @@ def join_rso_handler(data):
     # Add the user to the RSO
     try:
         cursor = db_connection.cursor()
-        cursor.execute('INSERT INTO rso_members (user_id, rso_id) VALUES (%s, %s)', (user_id, rso_id))
+        cursor.execute('INSERT INTO rso_members (id, rso_id) VALUES (%s, %s)', (user_id, rso_id))
         db_connection.commit()
     except psycopg2.Error as e:
         print(f"Error: {e}")
