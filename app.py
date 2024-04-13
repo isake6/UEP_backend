@@ -3,7 +3,7 @@ from flask_cors import CORS
 import login
 import update_university
 import add_user
-import add_event, get_events, get_pending_public_events, approve_pending_public_event, deny_pending_public_event, delete_event, get_single_event
+import add_event, get_events, get_pending_public_events, approve_pending_public_event, deny_pending_public_event, delete_event, get_single_event, update_event
 import add_comment, update_comment, get_comments, delete_comment
 import add_rating, get_user_rating, update_rating
 import add_rso, get_managed_rsos, get_university_rsos, join_rso, leave_rso, update_rso, get_user_rso_list
@@ -129,6 +129,16 @@ def leave_rso_route():
 def add_event_route():
 	data = request.get_json()
 	result = add_event.add_event_handler(data)
+	return result
+
+# Summary: This route is used to update an event in the database.
+# Method: POST
+# Input: user_id, event_id, name, category, time, description, location, phone, contact_email
+# Output: updates event in database
+@app.route('/update_event', methods=['POST'])
+def update_event_route():
+	data = request.get_json()
+	result = update_event.update_event_handler(data)
 	return result
 
 # Summary: This route is used to get a single event from the database.
