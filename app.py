@@ -6,7 +6,7 @@ import add_user
 import add_event, get_events, get_pending_public_events, approve_pending_public_event, deny_pending_public_event, delete_event, get_single_event, update_event
 import add_comment, update_comment, get_comments, delete_comment
 import add_rating, get_user_rating, update_rating
-import add_rso, get_managed_rsos, get_university_rsos, join_rso, leave_rso, update_rso, get_user_rso_list
+import add_rso, get_managed_rsos, get_university_rsos, join_rso, leave_rso, update_rso, get_user_rso_list, get_single_rso_details
 from database import db_pool
 
 app = Flask(__name__)
@@ -59,6 +59,16 @@ def create_route():
 def get_user_rso_list_route():
 	data = request.get_json()
 	result = get_user_rso_list.get_user_rso_list_handler(data)
+	return result
+
+# Summary: This route is used to get a single RSO from the database.
+# Method: POST
+# Input: rso_id
+# Output: returns single RSO as a JSON object
+@app.route('/get_single_rso_details', methods=['POST'])
+def get_single_rso_details_route():
+	data = request.get_json()
+	result = get_single_rso_details.get_single_rso_details_handler(data)
 	return result
 
 # Summary: This route is used to get all RSOs for a university.
