@@ -3,10 +3,10 @@ from flask_cors import CORS
 import login
 import update_university
 import add_user
-import add_event, get_events, get_pending_public_events, approve_pending_public_event, deny_pending_public_event, delete_event
+import add_event, get_events, get_pending_public_events, approve_pending_public_event, deny_pending_public_event, delete_event, get_single_event, update_event
 import add_comment, update_comment, get_comments, delete_comment
 import add_rating, get_user_rating, update_rating
-import add_rso, get_managed_rsos, get_university_rsos, join_rso, leave_rso, update_rso, get_user_rso_list
+import add_rso, get_managed_rsos, get_university_rsos, join_rso, leave_rso, update_rso, get_user_rso_list, get_single_rso_details
 from database import db_pool
 
 app = Flask(__name__)
@@ -59,6 +59,16 @@ def create_route():
 def get_user_rso_list_route():
 	data = request.get_json()
 	result = get_user_rso_list.get_user_rso_list_handler(data)
+	return result
+
+# Summary: This route is used to get a single RSO from the database.
+# Method: POST
+# Input: rso_id
+# Output: returns single RSO as a JSON object
+@app.route('/get_single_rso_details', methods=['POST'])
+def get_single_rso_details_route():
+	data = request.get_json()
+	result = get_single_rso_details.get_single_rso_details_handler(data)
 	return result
 
 # Summary: This route is used to get all RSOs for a university.
@@ -131,6 +141,26 @@ def add_event_route():
 	result = add_event.add_event_handler(data)
 	return result
 
+# Summary: This route is used to update an event in the database.
+# Method: POST
+# Input: user_id, event_id, name, category, time, description, location, phone, contact_email
+# Output: updates event in database
+@app.route('/update_event', methods=['POST'])
+def update_event_route():
+	data = request.get_json()
+	result = update_event.update_event_handler(data)
+	return result
+
+# Summary: This route is used to get a single event from the database.
+# Method: POST
+# Input: event_id
+# Output: returns single event as a JSON object
+@app.route('/get_single_event', methods=['POST'])
+def get_single_event_route():
+	data = request.get_json()
+	result = get_single_event.get_single_event_handler(data)
+	return result
+
 # Summary: This route is used to get events from the database.
 # Method: POST
 # Input: user_id, university_id
@@ -182,12 +212,13 @@ def deny_pending_public_event_route():
 	return result
 
 # Summary: This route is used to get comments for an event from the database.
-# Method: GET
-# Input: event_id included in URL as ?event_id=<event_id>
+# Method: POST
+# Input: event_id
 # Output: returns all comments for this event as a JSON object
-@app.route('/get_comments', methods=['GET'])
+@app.route('/get_comments', methods=['POST'])
 def get_comments_route():
-	result = get_comments.get_comments_handler()
+	data = request.get_json()
+	result = get_comments.get_comments_handler(data)
 	return result
 
 # Summary: This route is used to add a comment to an event in the database.
