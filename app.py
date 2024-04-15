@@ -1,7 +1,7 @@
 from flask import Flask, request, make_response, g
 from flask_cors import CORS
 import login
-import update_university
+import update_university, get_university_details
 import add_user
 import add_event, get_events, get_pending_public_events, approve_pending_public_event, deny_pending_public_event, delete_event, get_single_event, update_event
 import add_comment, update_comment, get_comments, delete_comment
@@ -29,6 +29,16 @@ def close_db(e=None):
 def login_route():
 	data = request.get_json()
 	result = login.login_handler(data)
+	return result
+
+# Summary: This route is used to get a university from the database.
+# Method: POST
+# Input: university_id
+# Output: returns single university as a JSON object
+@app.route('/get_university_details', methods=['POST'])
+def get_university_details_route():
+	data = request.get_json()
+	result = get_university_details.get_university_details_handler(data)
 	return result
 
 # Summary: This route is used to update a university in the database.
