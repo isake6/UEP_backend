@@ -3,6 +3,7 @@ from flask_cors import CORS
 import login
 import update_university, get_university_details
 import add_user
+import get_events_for_guest
 import add_event, get_events, get_pending_public_events, approve_pending_public_event, deny_pending_public_event, delete_event, get_single_event, update_event
 import add_comment, update_comment, get_comments, delete_comment
 import add_rating, get_user_rating, update_rating
@@ -179,6 +180,16 @@ def get_single_event_route():
 def get_events_route():
 	data = request.get_json()
 	result = get_events.get_events_handler(data)
+	return result
+
+# Summary: This route is used to get events for a guest from the database.
+# Method: POST
+# Input: none
+# Output: returns all public events as a JSON object
+@app.route('/get_events_for_guest', methods=['POST'])
+def get_events_for_guest_route():
+	data = request.get_json()
+	result = get_events_for_guest.get_events_for_guest_handler(data)
 	return result
 
 # Summary: This route is used to delete an event from the database.
