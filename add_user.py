@@ -1,6 +1,7 @@
 import psycopg2.extras
 from flask import jsonify
 from database import get_db
+import re
 
 def signup_handler(data):
     # Get the input from the request
@@ -27,6 +28,9 @@ def signup_handler(data):
     # Input validation
     if email is None or email == '':
         return jsonify({'message': 'email is missing'}), 400
+    
+    if not re.match(r'!/\S+@\S+.(com|net|org|edu)$/.test(email)', email):
+       return jsonify({'message': 'Invalid email address.'}), 400
     
     if password is None or password == '':
         return jsonify({'message': 'Password is missing'}), 400

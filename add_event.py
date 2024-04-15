@@ -1,6 +1,7 @@
 import psycopg2.extras
 from flask import jsonify
 from database import get_db
+import re
 
 def add_event_handler(data):
     # Get the input from the request
@@ -58,7 +59,11 @@ def add_event_handler(data):
         return jsonify({'message': 'Event phone is missing'}), 400
     
     if contact_email is None or contact_email == '':
-        return jsonify({'message': 'Event email is missing'}), 400
+        return jsonify({'message': 'Event contact email is missing'}), 400
+    
+    if not re.match(r'!/\S+@\S+.(com|net|org|edu)$/.test(email)', contact_email):
+       return jsonify({'message': 'Invalid email address.'}), 400
+    
     
     # Validate user id
     try:
