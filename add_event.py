@@ -61,7 +61,7 @@ def add_event_handler(data):
     if contact_email is None or contact_email == '':
         return jsonify({'message': 'Event contact email is missing'}), 400
     
-    if not re.match(r'!/\S+@\S+.(com|net|org|edu)$/.test(email)', contact_email):
+    if not re.match(r'\S+@\S+.(com|net|org|edu)$', contact_email):
        return jsonify({'message': 'Invalid email address.'}), 400
     
     
@@ -127,6 +127,9 @@ def add_event_handler(data):
 
     if rso is None:
         return jsonify({'message': 'Invalid RSO ID. RSO does not exist.'}), 401
+    
+    if rso['active'] == False:
+        return jsonify({'message': 'RSO is not active. Cannot add event to inactive RSO.'}), 401
     
     rso = rso['id']
 

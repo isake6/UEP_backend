@@ -29,7 +29,7 @@ def signup_handler(data):
     if email is None or email == '':
         return jsonify({'message': 'email is missing'}), 400
     
-    if not re.match(r'!/\S+@\S+.(com|net|org|edu)$/.test(email)', email):
+    if not re.match(r'\S+@\S+.(com|net|org|edu)$', email):
        return jsonify({'message': 'Invalid email address.'}), 400
     
     if password is None or password == '':
