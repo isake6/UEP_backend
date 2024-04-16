@@ -13,6 +13,8 @@ def update_event_handler(data):
         location = data['location']
         phone = data['phone']
         contact_email = data['contact_email']
+        lat = data['lat']
+        long = data['long']
     except KeyError as e:
         print(f"Error: Missing field {e} in request data")
         return jsonify({'message': f'Missing field {e} in request data'}), 400
@@ -52,6 +54,12 @@ def update_event_handler(data):
     if contact_email is None or contact_email == '':
         return jsonify({'message': 'Event contact email is missing'}), 400
     
+    if lat is None or lat == '':
+        return jsonify({'message': 'Event latitude is missing'}), 400
+    
+    if long is None or long == '':
+        return jsonify({'message': 'Event longitude is missing'}), 400
+    
     # Check that event exists in the database
     try:
         cursor = db_connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
@@ -70,7 +78,7 @@ def update_event_handler(data):
     # Update event in database
     try:
         cursor = db_connection.cursor()
-        cursor.execute('UPDATE events SET name = %s, category = %s, time = %s, description = %s, location = %s, phone = %s, email = %s WHERE id = %s', (name, category, time, description, location, phone, contact_email, event_id))
+        cursor.execute('UPDATE events SET name = %s, category = %s, time = %s, description = %s, location = %s, phone = %s, email = %s, lat = %s, long = %s WHERE id = %s', (name, category, time, description, location, phone, contact_email, event_id, lat, long))
         db_connection.commit()
     except psycopg2.Error as e:
         print(f"Error: {e}")

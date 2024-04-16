@@ -110,7 +110,7 @@ def add_event_handler(data):
     if category == 'public':
         try:
             cursor = db_connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
-            cursor.execute("INSERT INTO pending_events (university, author_id, approved, category, name, time, description, location, phone, email) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", (university, user_id, False, category, name, time, description, location, phone, contact_email))
+            cursor.execute("INSERT INTO pending_events (university, author_id, approved, category, name, time, description, location, phone, email, lat, long) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", (university, user_id, False, category, name, time, description, location, phone, contact_email, lat, long))
             db_connection.commit()
             return jsonify({'message': 'Public event submitted for approval'}), 200
         except psycopg2.Error as e:
