@@ -16,7 +16,8 @@ def add_event_handler(data):
         location = data['location']
         phone = data['phone']
         contact_email = data['contact_email']
-        coordinates = data['coordinates']
+        lat = data['lat']
+        long = data['long']
     except KeyError as e:
         print(f"Error: Missing field {e} in request data")
         return jsonify({'message': f'Missing field {e} in request data'}), 400
@@ -65,8 +66,11 @@ def add_event_handler(data):
     if not re.match(r'\S+@\S+.(com|net|org|edu)$', contact_email):
        return jsonify({'message': 'Invalid email address.'}), 400
     
-    if coordinates is None or coordinates == '':
-        return jsonify({'message': 'Event coordinates are missing'}), 400
+    if lat is None or lat == '':
+        return jsonify({'message': 'Event latitude is missing'}), 400
+    
+    if long is None or long == '':
+        return jsonify({'message': 'Event longitude is missing'}), 400
     
     
     # Validate user id
@@ -170,8 +174,8 @@ def add_event_handler(data):
     # Add the event to the database
     try:
         cursor = db_connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        cursor.execute("INSERT INTO events (university, author_id, approved, category, name, time, description, location, phone, email, rso, coordinates) VALUES \
-            (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", (university, user_id, True, category, name, time, description, location, phone, contact_email, rso, coordinates))
+        cursor.execute("INSERT INTO events (university, author_id, approved, category, name, time, description, location, phone, email, rso, lat, long) VALUES \
+            (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", (university, user_id, True, category, name, time, description, location, phone, contact_email, rso, lat, long))
         db_connection.commit()
         return jsonify({'message': 'Event added successfully'}), 200
     except psycopg2.Error as e:
