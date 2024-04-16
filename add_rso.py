@@ -82,6 +82,8 @@ def add_rso_handler(data):
             print("All users exist and are from the same university.")
             cursor.execute("SELECT id FROM users WHERE email = %s", (admin_email,))
             admin_id = cursor.fetchone()[0]
+        elif len(results) < len(emails_to_check):
+            return jsonify({'message': 'Not all users exist or there are duplicate emails'}), 401
         else:
             print("Not all users exist or are from different universities.")
             return jsonify({'message': 'Not all users exist or are from different universities'}), 401
