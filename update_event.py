@@ -78,7 +78,7 @@ def update_event_handler(data):
     # Update event in database
     try:
         cursor = db_connection.cursor()
-        cursor.execute('UPDATE events SET name = %s, category = %s, time = %s, description = %s, location = %s, phone = %s, email = %s, lat = %s, long = %s WHERE id = %s', (name, category, time, description, location, phone, contact_email, event_id, lat, long))
+        cursor.execute('UPDATE events SET name = %s, category = %s, time = %s, description = %s, location = %s, phone = %s, email = %s, lat = %s, long = %s WHERE id = %s', (name, category, time, description, location, phone, contact_email, lat, long, event_id))
         db_connection.commit()
     except psycopg2.Error as e:
         print(f"Error: {e}")
