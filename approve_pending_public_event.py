@@ -104,7 +104,22 @@ def approve_pending_public_event_handler(data):
             cursor.close()
 
     if result is not None:
-        return jsonify({'message': 'Event overlaps with an existing event'}), 401
+        return jsonify({'message': 'Event overlaps with an existing event at this time and location'}), 401
+    
+    # Check if there is an overlap with existing events coordinates and time
+    try:
+        cursor = db_connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        cursor.execute('SELECT * FROM events WHERE lat = %s AND long = %s AND time = %s', (event['lat'], event['long'], event['time']))
+        result = cursor.fetchone()
+    except psycopg2.Error as e:
+        print(f"Error: {e}")
+        return jsonify({'message': 'Error while trying to select from events table.'}), 500
+    finally:
+        if cursor is not None:
+            cursor.close()
+
+    if result is not None:
+        return jsonify({'message': 'Event overlaps with an existing event at this time and coordinates'}), 401
 
     # Remove from pending events table
     try:
@@ -120,7 +135,7 @@ def approve_pending_public_event_handler(data):
     # Add event to events table
     try:
         cursor = db_connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-        cursor.execute('INSERT INTO events (name, author_id, phone, email, approved, description, location, time, university, category) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id', (event['name'], event['author_id'], event['phone'], event['email'], True, event['description'], event['location'], event['time'], event['university'], event['category']))
+        cursor.execute('INSERT INTO events (name, author_id, phone, email, approved, description, location, time, university, category, lat, long) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id', (event['name'], event['author_id'], event['phone'], event['email'], True, event['description'], event['location'], event['time'], event['university'], event['category'], event['lat'], event['long']))
         event_id = cursor.fetchone()['id']
         db_connection.commit()
     except psycopg2.Error as e:
