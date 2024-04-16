@@ -75,6 +75,41 @@ def update_event_handler(data):
     if event is None:
         return jsonify({'message': 'Event does not exist'}), 400
     
+    # Check that the new time and location are not already taken
+    try:
+        cursor = db_connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        cursor.execute('SELECT * FROM events WHERE time = %s AND location = %s', (time, location))
+        event = cursor.fetchall()
+    except psycopg2.Error as e:
+        print(f"Error: {e}")
+        return jsonify({'message': 'Error while trying to select from events table.'}), 500
+    finally:
+        if cursor is not None:
+            cursor.close()
+
+    if event is not None:
+        if len(event) > 1 or (len(event) == 1 and event[0]['id'] != event_id):
+            print('Event with the same time and location already exists')
+            return jsonify({'message': 'Event with the same time and location already exists'}), 400
+        
+    # Do a similar overlap check but with lat and long
+    try:
+        cursor = db_connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        cursor.execute('SELECT * FROM events WHERE time = %s AND lat = %s AND long = %s', (time, lat, long))
+        event = cursor.fetchall()
+    except psycopg2.Error as e:
+        print(f"Error: {e}")
+        return jsonify({'message': 'Error while trying to select from events table.'}), 500
+    finally:
+        if cursor is not None:
+            cursor.close()
+
+    if event is not None:
+        if len(event) > 1 or (len(event) == 1 and event[0]['id'] != event_id):
+            print('Event with the same time and location already exists')
+            return jsonify({'message': 'Event with the same time and coordinates already exists'}), 400
+    
+    
     # Update event in database
     try:
         cursor = db_connection.cursor()

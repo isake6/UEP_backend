@@ -170,6 +170,21 @@ def add_event_handler(data):
 
     if results is not None:
         return jsonify({'message': 'Error: Event Overlap. An event already exists at this time and location'}), 401
+    
+    # Do a similar overlap check but with lat and long
+    try:
+        cursor = db_connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        cursor.execute('SELECT * FROM events WHERE time = %s AND lat = %s AND long = %s', (time, lat, long))
+        event = cursor.fetchall()
+    except psycopg2.Error as e:
+        print(f"Error: {e}")
+        return jsonify({'message': 'Error while trying to select from events table.'}), 500
+    finally:
+        if cursor is not None:
+            cursor.close()
+
+    if event is not None:
+        return jsonify({'message': 'Event with the same time and coordinate location already exists'}), 400
 
     # Add the event to the database
     try:
