@@ -109,7 +109,9 @@ def approve_pending_public_event_handler(data):
     # Check if there is an overlap with existing events coordinates and time
     try:
         cursor = db_connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-        cursor.execute('SELECT * FROM events WHERE lat = %s AND long = %s AND time = %s', (event['lat'], event['long'], event['time']))
+        cursor.execute('SELECT * FROM events WHERE \
+                       lat BETWEEN %s-0.0001 AND %s+0.0001 AND \
+                       long BETWEEN %s-0.0001 AND %s+0.0001 AND time = %s', (event['lat'], event['lat'], event['long'], event['long'], event['time']))
         result = cursor.fetchone()
     except psycopg2.Error as e:
         print(f"Error: {e}")
