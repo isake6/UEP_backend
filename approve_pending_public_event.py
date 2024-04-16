@@ -140,7 +140,7 @@ def approve_pending_public_event_handler(data):
         db_connection.commit()
     except psycopg2.Error as e:
         print(f"Error: {e}")
-        return jsonify({'message': 'Error while trying to insert into events table.'}), 500
+        return jsonify({'message': 'Error while trying to insert into events table.', 'input': event}), 500
     finally:
         if cursor is not None:
             cursor.close()
