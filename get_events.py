@@ -61,11 +61,11 @@ def get_events_handler(data):
     # Get events from database
     try:
         cursor = db_connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-        cursor.execute('''(SELECT * FROM events E WHERE E.category = 'private' AND E.university = %s) \
+        cursor.execute('''(SELECT *, coordinates::text FROM events E WHERE E.category = 'private' AND E.university = %s) \
             UNION \
-            (SELECT * FROM events E WHERE E.category = 'public') \
+            (SELECT *, coordinates::text FROM events E WHERE E.category = 'public') \
             UNION \
-            (SELECT E.* FROM events E, rso_members M WHERE E.category = 'RSO' AND E.rso = M.rso_id AND M.id = %s)''' \
+            (SELECT E.*, coordinates::text FROM events E, rso_members M WHERE E.category = 'RSO' AND E.rso = M.rso_id AND M.id = %s)''' \
             , (university_id, user_id))
         events = cursor.fetchall()
     except psycopg2.Error as e:
