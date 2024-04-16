@@ -95,7 +95,9 @@ def update_event_handler(data):
     # Do a similar overlap check but with lat and long
     try:
         cursor = db_connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-        cursor.execute('SELECT * FROM events WHERE time = %s AND lat = %s AND long = %s', (time, lat, long))
+        cursor.execute('SELECT * FROM events WHERE \
+                       lat BETWEEN %s-0.0001 AND %s+0.0001 AND \
+                       long BETWEEN %s-0.0001 AND %s+0.0001 AND time = %s', (lat, lat, long, long, time))
         event = cursor.fetchall()
     except psycopg2.Error as e:
         print(f"Error: {e}")
