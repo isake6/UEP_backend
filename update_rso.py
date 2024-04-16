@@ -112,7 +112,7 @@ def update_rso_handler(data):
     try:
         cursor = db_connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         cursor.execute('SELECT id FROM users WHERE email = %s', (admin_email,))
-        admin = cursor.fetchone()['id']
+        admin = cursor.fetchone()
     except psycopg2.Error as e:
         print(f"Error: {e}")
         return jsonify({'message': 'Error while trying to select from users table.'}), 500
@@ -122,6 +122,8 @@ def update_rso_handler(data):
 
     if admin is None:
         return jsonify({'message': 'Admin email is not in the database'}), 401
+    
+    admin = admin['id']
     
     # Check that the new admin is another member of the RSO
     try:
