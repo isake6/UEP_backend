@@ -177,7 +177,7 @@ def add_event_handler(data):
         cursor.execute('SELECT * FROM events WHERE \
                        lat BETWEEN %s-0.0001 AND %s+0.0001 AND \
                        long BETWEEN %s-0.0001 AND %s+0.0001 AND time = %s', (lat, lat, long, long, time))
-        event = cursor.fetchall()
+        event = cursor.fetchone()
     except psycopg2.Error as e:
         print(f"Error: {e}")
         return jsonify({'message': 'Error while trying to select from events table.'}), 500
@@ -186,7 +186,7 @@ def add_event_handler(data):
             cursor.close()
 
     if event is not None:
-        return jsonify({'message': 'Event with the same time and coordinate location already exists'}), 400
+        return jsonify({'message': 'Event with the same time and coordinate location already exists', 'coords': (lat, ', ', long), 'overlapping coords': (event['lat'], event['long'])}), 400
 
     # Add the event to the database
     try:

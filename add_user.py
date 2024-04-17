@@ -85,7 +85,7 @@ def signup_handler(data):
             university_check = cursor.fetchone()
             if university_check is not None:
                 return jsonify({'message': 'Invalid email domain. A university with this email domain already exists.'}), 401
-            cursor.execute("INSERT INTO universities (name, email_domain) VALUES (%s, %s) RETURNING id", ((email + ' University'), email.split('@')[1]))
+            cursor.execute("INSERT INTO universities (name, email_domain, lat, long) VALUES (%s, %s, 0, 0) RETURNING id", ((email + ' University'), email.split('@')[1]))
             new_university = cursor.fetchone()
         except psycopg2.Error as e:
             print(f"Error: {e}")

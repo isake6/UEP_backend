@@ -70,4 +70,7 @@ def get_user_rating_handler(data):
         if cursor is not None:
             cursor.close()
 
+    if rating is None:
+        return jsonify({'message': 'No rating exists'}), 200
+
     return jsonify({'rating': rating}), 200
