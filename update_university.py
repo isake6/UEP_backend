@@ -11,6 +11,8 @@ def update_university_handler(data):
         new_location = data['new_location']
         new_description = data['new_description']
         new_population = data['new_population']
+        new_lat = data['new_lat']
+        new_long = data['new_long']
     except KeyError as e:
         print(f"Error: Missing field {e} in request data")
         return jsonify({'message': f'Missing field {e} in request data'}), 400
@@ -43,6 +45,12 @@ def update_university_handler(data):
     
     if new_population is None or new_population == '':
         return jsonify({'message': 'New population is missing'}), 400
+    
+    if new_lat is None or new_lat == '':
+        return jsonify({'message': 'New latitude is missing'}), 400
+    
+    if new_long is None or new_long == '':
+        return jsonify({'message': 'New longitude is missing'}), 400
     
     # Check that the user exists
     try:
@@ -92,7 +100,7 @@ def update_university_handler(data):
     # Update university
     try:
         cursor = db_connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-        cursor.execute('UPDATE universities SET name = %s, location = %s, description = %s, student_population = %s WHERE id = %s', (new_name, new_location, new_description, new_population, university_id))
+        cursor.execute('UPDATE universities SET name = %s, location = %s, description = %s, student_population = %s, lat = %s, long = %s WHERE id = %s', (new_name, new_location, new_description, new_population, new_lat, new_long, university_id))
         db_connection.commit()
     except psycopg2.Error as e:
         print(f"Error: {e}")

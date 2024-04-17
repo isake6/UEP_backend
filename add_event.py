@@ -16,6 +16,8 @@ def add_event_handler(data):
         location = data['location']
         phone = data['phone']
         contact_email = data['contact_email']
+        lat = data['lat']
+        long = data['long']
     except KeyError as e:
         print(f"Error: Missing field {e} in request data")
         return jsonify({'message': f'Missing field {e} in request data'}), 400
@@ -64,6 +66,12 @@ def add_event_handler(data):
     if not re.match(r'\S+@\S+.(com|net|org|edu)$', contact_email):
        return jsonify({'message': 'Invalid email address.'}), 400
     
+    if lat is None or lat == '':
+        return jsonify({'message': 'Event latitude is missing'}), 400
+    
+    if long is None or long == '':
+        return jsonify({'message': 'Event longitude is missing'}), 400
+    
     
     # Validate user id
     try:
@@ -102,7 +110,7 @@ def add_event_handler(data):
     if category == 'public':
         try:
             cursor = db_connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
-            cursor.execute("INSERT INTO pending_events (university, author_id, approved, category, name, time, description, location, phone, email) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", (university, user_id, False, category, name, time, description, location, phone, contact_email))
+            cursor.execute("INSERT INTO pending_events (university, author_id, approved, category, name, time, description, location, phone, email, lat, long) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", (university, user_id, False, category, name, time, description, location, phone, contact_email, lat, long))
             db_connection.commit()
             return jsonify({'message': 'Public event submitted for approval'}), 200
         except psycopg2.Error as e:
@@ -162,12 +170,29 @@ def add_event_handler(data):
 
     if results is not None:
         return jsonify({'message': 'Error: Event Overlap. An event already exists at this time and location'}), 401
+    
+    # Do a similar overlap check but with lat and long
+    try:
+        cursor = db_connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        cursor.execute('SELECT * FROM events WHERE \
+                       lat BETWEEN %s-0.0001 AND %s+0.0001 AND \
+                       long BETWEEN %s-0.0001 AND %s+0.0001 AND time = %s', (lat, lat, long, long, time))
+        event = cursor.fetchall()
+    except psycopg2.Error as e:
+        print(f"Error: {e}")
+        return jsonify({'message': 'Error while trying to select from events table.'}), 500
+    finally:
+        if cursor is not None:
+            cursor.close()
+
+    if event is not None:
+        return jsonify({'message': 'Event with the same time and coordinate location already exists'}), 400
 
     # Add the event to the database
     try:
         cursor = db_connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        cursor.execute("INSERT INTO events (university, author_id, approved, category, name, time, description, location, phone, email, rso) VALUES \
-            (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", (university, user_id, True, category, name, time, description, location, phone, contact_email, rso))
+        cursor.execute("INSERT INTO events (university, author_id, approved, category, name, time, description, location, phone, email, rso, lat, long) VALUES \
+            (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", (university, user_id, True, category, name, time, description, location, phone, contact_email, rso, lat, long))
         db_connection.commit()
         return jsonify({'message': 'Event added successfully'}), 200
     except psycopg2.Error as e:
